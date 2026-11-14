@@ -38,7 +38,7 @@ because `src/` is changing; functions are named instead.
 | `class extends Clutter.ShaderEffect`, `vfunc_get_static_snippet()` | shader.js | `enable()` throws and the extension shows as errored with the base taken over (below) | No |
 | `vfunc_paint_target(node, paintContext)`, `this.get_pipeline()` | shader.js | Patterns freeze on their first frame, or draw with no uniforms | No |
 | `Cogl.Pipeline.set_uniform_float()` from GJS | shader.js | Every pattern draws as at time 0 with a zero canvas | No |
-| `Main.wm._workspaceAnimation.animateSwitch` (replaced on the instance) | switch/switch.js | Switches show the shell's slide | Thrown at enable, or never called |
+| `Main.wm._workspaceAnimation.animateSwitch` (replaced on the instance) | switch/switch.js | Switches show the shell's slide | Yes, logs a warning when the controller is gone |
 | `controller._prepareWorkspaceSwitch()`, `._switchData` (`.monitors`, `.inProgress`), `._finishWorkspaceSwitch()`, `._swipeTracker.enabled`, `monitorGroup._workspaceGroups` | switch/switch.js | The half-made switch is finished and the shell's slide runs instead | Yes, logs an error |
 
 "Silently" means it degrades without a line in the journal, so the symptom is
@@ -623,7 +623,7 @@ calls `_workspaceAnimation.animateSwitch` from `_switchWorkspace` and
 
 | Expression | What for | If it changes |
 |---|---|---|
-| `Main.wm._workspaceAnimation` | The `WorkspaceAnimationController` instance that animates every switch | `enable()` throws; the shell's slide stays |
+| `Main.wm._workspaceAnimation` | The `WorkspaceAnimationController` instance that animates every switch | A warning at enable; the shell's slide stays, and the wallpaper and titles enable as usual |
 | `controller.animateSwitch` (replaced on the instance) | The one place a keyboard or programmatic switch is animated. Put back on disable only while it is still ours, to whatever was there | Switches show the shell's slide |
 | `controller._prepareWorkspaceSwitch(indices)`, `controller._switchData` (`.monitors`, `.inProgress`), `controller._finishWorkspaceSwitch(switchData)` | The shell builds and tears down the clones, the grab and unredirection exactly as for its own slide, so mutter's cancellation and the overview keep working. `_prepareWorkspaceSwitch` is the one `overview.js` wraps, so the patterns are in the groups the switch moves | `play()` throws, the half-made switch is finished and the slide runs instead |
 | `controller._swipeTracker.enabled` | Off while a scene runs, as the shell's own `animateSwitch` does, so a swipe cannot start a second switch over it | Same |

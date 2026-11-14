@@ -27,7 +27,12 @@ export class WorkspaceFxSwitch {
     }
 
     enable() {
+        // Private: a shell without it keeps its slide, and the other parts still enable.
         const controller = Main.wm._workspaceAnimation;
+        if (!controller) {
+            console.warn('[WorkspaceFx] No workspace animation to replace; switches keep the slide');
+            return;
+        }
         const original = controller.animateSwitch;
         const settings = this._settings;
         this._controller = controller;
@@ -48,7 +53,7 @@ export class WorkspaceFxSwitch {
     // A switch already under way finishes on its own; it holds what it needs.
     disable() {
         const controller = this._controller;
-        if (controller.animateSwitch === this._animateSwitch) {
+        if (controller && controller.animateSwitch === this._animateSwitch) {
             if (this._own)
                 controller.animateSwitch = this._own;
             else
