@@ -30,7 +30,7 @@ the switch animation are on). Report in two parts.
 - **install** — `extension.js` linked to `scripts/dev-extension.js` means dev
   mode: the nested shell, and the real one at its next login, run `src/`; a
   real file means a copy that won't pick up edits until `make install` is re-run.
-  `made before dev-extension.json` is a link from before the kit's scripts: the
+  `made before dev-extension.json` is a link older than these scripts: the
   user's to remake with `make link`.
   The nested shell reads the same install.
 - **state** — the extension's state in the user's own shell

@@ -3,7 +3,7 @@
 `metadata.json` claims GNOME Shell 51, and the code is written for it alone.
 Release 1.2, as Wallpaper FX, was the last for GNOME 50. This page lists what has been tested, every code
 path that depends on the shell's version, and what a port to another version
-(`gnome-ext:port-shell-version`) has to change or check first.
+(`port-shell-version`) has to change or check first.
 
 ## What has been tested
 
