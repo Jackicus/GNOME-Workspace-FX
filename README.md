@@ -153,7 +153,8 @@ Your patterns ride along on the workspaces.
 - **A Different One Each Time**.
 
 The scenes take their colour from your accent colour. Touchpad swipes keep GNOME's own
-slide, and with animations off switches are instant, as they are without it.
+slide, as does every switch while Reduce Motion is on in Accessibility; with animations
+off, switches are instant, as they are without it.
 
 ## Wallpaper features
 
