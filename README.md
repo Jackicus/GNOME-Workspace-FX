@@ -282,7 +282,11 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
 <table>
   <tr>
     <td align="center" width="50%"><img src="docs/screenshots/scenes.png" alt="The Scenes page: the Weather group with Follow the Weather off, Weather Sets the Sky on and the Place row reading Bergen, from GNOME Weather, then Your Scenes with Save Your Look As…"><br><b>Scenes</b></td>
-    <td align="center" width="50%"><img src="docs/screenshots/prefs.png" alt="The Patterns page, scrolled to where the Ambient group ends and the Weather group begins: Constellation switched on above, then Clouds, Sunbeams, Lightning, Fog and Snow, each with a description, a switch and an expander"><br><b>Patterns</b></td>
+    <td align="center" width="50%"><img src="docs/screenshots/prefs.png" alt="The Patterns page, scrolled to where the Ambient group ends and the Weather group begins: Sparkles switched on, Embers, Fireflies and Bokeh off, then Clouds, Sunbeams, Lightning, Fog and Snow, each with a description, a switch and an expander"><br><b>Patterns</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/prefs-titles.png" alt="The Titles page: Workspace Titles on; under Renaming, the Rename Shortcut Super+F2, Top Bar Button on and Button Position Left; under Title, Show on Hover on, Position Top and Size Large"><br><b>Titles</b></td>
+    <td align="center"><img src="docs/screenshots/prefs-switching.png" alt="The Switching page: Switch Animation on with the Scene Corridor; under Motion, Duration 900 and Scene Drawings per Second 12; under Style, Focus Lines on and Impact Frame off"><br><b>Switching</b></td>
   </tr>
 </table>
 
