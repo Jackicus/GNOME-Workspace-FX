@@ -53,7 +53,7 @@ export class MonitorRenderer {
         this._at = [0, 0];
 
         this.actor = new Clutter.Actor({
-            name: `WallpaperFx-Monitor-${monitor.index}`,
+            name: `WorkspaceFx-Monitor-${monitor.index}`,
             x: monitor.x,
             y: monitor.y,
             width: monitor.width,

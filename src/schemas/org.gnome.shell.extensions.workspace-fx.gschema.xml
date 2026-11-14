@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.wallpaper-fx" path="/org/gnome/shell/extensions/wallpaper-fx/">
+  <schema id="org.gnome.shell.extensions.workspace-fx" path="/org/gnome/shell/extensions/workspace-fx/">
     <key name="enabled-effects" type="as">
       <default>['wave', 'sparkles']</default>
       <summary>Enabled animated patterns</summary>
@@ -113,6 +113,98 @@
       <default>0.02</default>
       <summary>Pointer tilt reach</summary>
       <description>How far the wallpaper moves either side of centre, as a share of the monitor.</description>
+    </key>
+  </schema>
+  <enum id="org.gnome.shell.extensions.workspace-fx.titles.position">
+    <value nick="top" value="0"/>
+    <value nick="center" value="1"/>
+  </enum>
+  <enum id="org.gnome.shell.extensions.workspace-fx.titles.size">
+    <value nick="small" value="0"/>
+    <value nick="large" value="1"/>
+    <value nick="huge" value="2"/>
+  </enum>
+  <enum id="org.gnome.shell.extensions.workspace-fx.titles.indicator-position">
+    <value nick="left" value="0"/>
+    <value nick="center" value="1"/>
+    <value nick="right" value="2"/>
+  </enum>
+  <schema id="org.gnome.shell.extensions.workspace-fx.titles" path="/org/gnome/shell/extensions/workspace-fx/titles/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Workspace titles</summary>
+      <description>Whether workspace names are shown on a switch and can be edited in place. Off, none of the keys below has any effect.</description>
+    </key>
+    <key name="rename-shortcut" type="as">
+      <default><![CDATA[['<Super>F2']]]></default>
+      <summary>Rename the current workspace</summary>
+      <description>Opens the title of the workspace in view for editing. Empty is no shortcut.</description>
+    </key>
+    <key name="show-indicator" type="b">
+      <default>true</default>
+      <summary>Show the rename button</summary>
+      <description>Whether a button in the top bar opens the title for editing.</description>
+    </key>
+    <key name="indicator-position" enum="org.gnome.shell.extensions.workspace-fx.titles.indicator-position">
+      <default>'left'</default>
+      <summary>Where the rename button is</summary>
+      <description>Left, just right of the workspace indicator; centre, right of the clock; or right, left of the system menu.</description>
+    </key>
+    <key name="show-on-hover" type="b">
+      <default>true</default>
+      <summary>Show the title on hover</summary>
+      <description>Whether resting the pointer on the workspace indicator at the left of the top bar shows the current workspace's title.</description>
+    </key>
+    <key name="title-position" enum="org.gnome.shell.extensions.workspace-fx.titles.position">
+      <default>'top'</default>
+      <summary>Where the title is shown</summary>
+      <description>At the top of the screen, or in its middle.</description>
+    </key>
+    <key name="title-size" enum="org.gnome.shell.extensions.workspace-fx.titles.size">
+      <default>'large'</default>
+      <summary>How large the title is</summary>
+      <description>The size of the workspace name shown on a switch.</description>
+    </key>
+  </schema>
+  <schema id="org.gnome.shell.extensions.workspace-fx.switch" path="/org/gnome/shell/extensions/workspace-fx/switch/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Switch animation</summary>
+      <description>Whether a workspace switch is a camera move through a scene. Off, the shell slides as usual.</description>
+    </key>
+    <key name="scene" type="s">
+      <choices>
+        <choice value="corridor"/>
+        <choice value="shaft"/>
+        <choice value="warp"/>
+        <choice value="sky"/>
+        <choice value="random"/>
+      </choices>
+      <default>'corridor'</default>
+      <summary>Scene</summary>
+      <description>The scene a switch passes through, or "random" for a different one each time.</description>
+    </key>
+    <key name="duration" type="i">
+      <range min="400" max="2000"/>
+      <default>900</default>
+      <summary>Duration</summary>
+      <description>Milliseconds a switch to the next workspace takes; a longer jump takes up to half as long again.</description>
+    </key>
+    <key name="step-rate" type="i">
+      <range min="0" max="30"/>
+      <default>12</default>
+      <summary>Scene drawings per second</summary>
+      <description>How often the scene is redrawn, as anime holds each drawing for two or three frames. 0 draws it on every frame. The workspaces always move smoothly.</description>
+    </key>
+    <key name="focus-lines" type="b">
+      <default>true</default>
+      <summary>Focus lines</summary>
+      <description>Radial speed lines while the camera is at speed.</description>
+    </key>
+    <key name="impact-frame" type="b">
+      <default>false</default>
+      <summary>Impact frame</summary>
+      <description>One inverted drawing of the scene as the new workspace arrives.</description>
     </key>
   </schema>
 </schemalist>

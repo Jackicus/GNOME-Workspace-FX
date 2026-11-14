@@ -189,8 +189,8 @@ It is not on extensions.gnome.org yet, so install it from source. You need `git`
 and `glib-compile-schemas`, which comes with GLib.
 
 ```bash
-git clone https://github.com/Jackicus/GNOME-Wallpaper-FX.git
-cd GNOME-Wallpaper-FX
+git clone https://github.com/Jackicus/GNOME-Workspace-FX.git
+cd GNOME-Workspace-FX
 make install
 ```
 

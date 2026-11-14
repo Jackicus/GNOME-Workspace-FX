@@ -1,4 +1,4 @@
-# Wallpaper FX's own nested.sh commands, sourced by the kit's scripts/nested.sh.
+# Workspace FX's own nested.sh commands, sourced by the kit's scripts/nested.sh.
 #
 #   ./scripts/nested.sh weather-place [LATITUDE LONGITUDE | none]
 #                                     set GNOME Weather's place, as the shell keeps it in
