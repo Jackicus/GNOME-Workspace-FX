@@ -169,8 +169,15 @@ constructor, but it is constructed inside `enable()`.
 
 ### Destroy all objects: meets
 
-`disable()` tears down, in order: the layout-manager, settings and interface
-signal connections; the overview clones and the slide override (put back
+`WorkspaceFxApp.disable()` disables the titles and the switch animation, if
+they are on, then the wallpaper. The titles take back their two injections
+(`WorkspaceSwitcherPopup.prototype.display`, `Main.wm.insertWorkspace`), the
+rename keybinding, the Activities hover connection and its timer, and destroy
+the editor, the popup they put up, the top-bar button and every title. The
+switch animation puts the controller's `animateSwitch` back while it is still
+its own. The wallpaper's `disable()` tears down, in order: the layout-manager,
+settings, interface, mutter, desktop-background and workspace-manager signal
+connections; the overview clones and the slide override (put back
 while it is still the outermost wrap); `Parallax` (its picture load cancelled,
 its panoramas destroyed, the wallpaper and Blur My Shell's actors put back and
 its hook on Blur My Shell's prototype taken back while it is still its own, its
@@ -192,7 +199,8 @@ dynamically stored memory must be cleared or freed in disable()".
 
 `enable()` is not wrapped. If it threw, the shell would mark the extension as
 errored without calling `disable()` (`extensionSystem.js` in 51.1); on 51 nothing
-in it throws (`_backgroundGroup` and the background source are checked).
+in it throws (`_backgroundGroup`, the background source and the switch
+animation's controller are checked).
 
 ### Disconnect all signals: meets
 
@@ -281,7 +289,11 @@ lists the patterns reviewers look for. In this code:
   remain: `error.matches()`, `peek_stage_views()` and the parts `enable()`
   builds are used directly. What optional chaining is left is on private shell
   paths, where it is how they degrade and [private-api.md](private-api.md)
-  explains each; on `WorkspaceFxWallpaper._weather`, which is null while unused; on
+  explains each; on what is kept only while it is needed and null otherwise (the
+  wallpaper's `_weather`, `_pointer` and `_daytime`, a layer's `state`, a
+  monitor's tilt, a renderer for a monitor not yet built, an optional part in
+  `app.js`, the titles' popup, editor and button, and the callbacks and
+  cancellables set after construction); on
   the place GNOME Weather's settings deserialize to, which may be none; and on
   `workspace.metaWorkspace?.index()` in `overview.js`, where `metaWorkspace` is
   null for a monitor's extra workspace view.

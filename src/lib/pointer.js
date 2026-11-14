@@ -29,7 +29,7 @@ export class PointerTrail {
         while (time - this._samples[0].time > KEEP_S) this._samples.shift();
     }
 
-    // In a layer's canvas pixels (`offset` takes the stage there), newest first: the
+    // In a layer's canvas pixels (`[dx, dy]` takes the stage there), newest first: the
     // pointer now, its speed over the last tenth of a second, how long it has been
     // still (since the last sample, however long ago; before any, forever).
     view([dx, dy]) {

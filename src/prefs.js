@@ -353,7 +353,7 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
 
             dialog.open(ui.window, null, (self, result) => {
                 try {
-                    const path = self.open_finish(result)?.get_path();
+                    const path = self.open_finish(result).get_path();
                     if (path) write(path);
                 } catch {
                     // Dismissed, or the portal refused.

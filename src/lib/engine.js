@@ -37,7 +37,7 @@ export class SceneClock {
     }
 
     time(id) {
-        return this._times.get(id) ?? 0;
+        return this._times.get(id);
     }
 }
 
@@ -172,7 +172,7 @@ export class MonitorRenderer {
     }
 
     // A paint through a clone (the overview, the slide) is never covered.
-    _paused(throughClone = false) {
+    _paused(throughClone) {
         const state = this._state;
         if (this._layers.size === 0) return true;
         if (!state.animations || state.powerSaver) return true;

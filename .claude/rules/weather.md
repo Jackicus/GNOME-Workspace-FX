@@ -17,7 +17,8 @@ paths:
   (`REFRESH_S`), and on a new place more than 10 km from the last (`MOVED_KM`); a
   remembered one is shown for up to six hours (`KEEP_S`).
 - **`weather-status`** is written only by `WeatherWatcher`, for prefs to show and for the
-  next enable (every unlock) to start from. wallpaper.js ignores changes to it.
+  next enable (every unlock) to start from, and reset by wallpaper.js when the weather is
+  turned off. wallpaper.js ignores changes to it.
 - **`looks.js`** turns conditions and the time of day into the same values a scene holds
   (patterns, tuning, palette). It is pure, so `node` can run it. `sun.js` gives the sun's
   elevation, and so dawn, day, dusk or night, from a place and a time.
