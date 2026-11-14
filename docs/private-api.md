@@ -1,8 +1,11 @@
 # Private and deep GNOME Shell API
 
-Wallpaper FX puts a canvas between the wallpaper and the windows, makes its
+Workspace FX puts a canvas between the wallpaper and the windows, makes its
 base the shell's own wallpaper, and follows both into the overview and the
-workspace slide. None of that has a public API. This is everything it reaches
+workspace slide; its switch animation replaces that slide. None of that has a
+public API. Its titles reach nothing private: they wrap the exported
+`WorkspaceSwitcherPopup.prototype.display` and `Main.wm.insertWorkspace` with the
+`InjectionManager`, and read `Main.panel.statusArea.activities`. This is everything it reaches
 into, for reviewers on extensions.gnome.org and for whoever ports it to the next
 GNOME.
 
@@ -18,7 +21,7 @@ because `src/` is changing; functions are named instead.
 
 | Expression | File | If it changes in a future GNOME | Checked in code |
 |---|---|---|---|
-| `Main.layoutManager._backgroundGroup` | app.js | No patterns anywhere; the base still shows | Yes, logs a warning |
+| `Main.layoutManager._backgroundGroup` | wallpaper.js | No patterns anywhere; the base still shows | Yes, logs a warning |
 | `new Background.BackgroundManager(...)._backgroundSource` | background.js | Base modes show the user's own wallpaper | Yes, logs a warning |
 | `source._settings` (read, replaced, restored) | background.js | Same | Yes, logs a warning |
 | `source._backgrounds` (also read as "source destroyed" when null), `background._emitChangedSignal()` | background.js | A new base appears only at the shell's next wallpaper reload | Yes, silently |
@@ -35,6 +38,8 @@ because `src/` is changing; functions are named instead.
 | `class extends Clutter.ShaderEffect`, `vfunc_get_static_snippet()` | shader.js | `enable()` throws and the extension shows as errored with the base taken over (below) | No |
 | `vfunc_paint_target(node, paintContext)`, `this.get_pipeline()` | shader.js | Patterns freeze on their first frame, or draw with no uniforms | No |
 | `Cogl.Pipeline.set_uniform_float()` from GJS | shader.js | Every pattern draws as at time 0 with a zero canvas | No |
+| `Main.wm._workspaceAnimation.animateSwitch` (replaced on the instance) | switch/switch.js | Switches show the shell's slide | Thrown at enable, or never called |
+| `controller._prepareWorkspaceSwitch()`, `._switchData` (`.monitors`, `.inProgress`), `._finishWorkspaceSwitch()`, `._swipeTracker.enabled`, `monitorGroup._workspaceGroups` | switch/switch.js | The half-made switch is finished and the shell's slide runs instead | Yes, logs an error |
 
 "Silently" means it degrades without a line in the journal, so the symptom is
 the only sign.
@@ -43,12 +48,12 @@ the only sign.
 
 ### `Main.layoutManager._backgroundGroup`
 
-`app.js`, `_build()`:
+`wallpaper.js`, `_build()`:
 
 ```js
 const group = Main.layoutManager._backgroundGroup;
 if (!group) {
-    console.warn('[WallpaperFx] No background group to draw in');
+    console.warn('[WorkspaceFx] No background group to draw in');
     return;
 }
 ...
@@ -165,7 +170,7 @@ used.
 
 ```js
 if (!source?._settings) {
-    console.warn('[WallpaperFx] No background source to take over; the base will not change');
+    console.warn('[WorkspaceFx] No background source to take over; the base will not change');
     return;
 }
 ```
@@ -326,7 +331,7 @@ ever written to dconf and the base is gone the moment the shell restarts. `updat
 `picture-uri` and `picture-uri-dark` to the same file (so the colour scheme does
 not matter), `picture-options`, `primary-color`, `secondary-color` and
 `color-shading-type`, between `delay()` and `apply()` so a mode change costs one
-crossfade. The gradient files are PNGs in `~/.cache/wallpaper-fx/`, named by
+crossfade. The gradient files are PNGs in `~/.cache/workspace-fx/`, named by
 a digest of the stops and size, and never pruned.
 
 ## The overview (overview.js)
@@ -381,7 +386,7 @@ if (!group || index === undefined) continue;
 **What for.** `workspace._background` is the preview's `WorkspaceBackground`;
 its `_backgroundGroup` is the `Meta.BackgroundGroup` its wallpaper is in, which
 the overview's own scaling and rounded clipping already apply to. The clone goes
-in there, inside a `WallpaperFxPreviewHost` that reads its allocation back as a scale.
+in there, inside a `WorkspaceFxPreviewHost` that reads its allocation back as a scale.
 `_monitorIndex` picks the canvas to clone.
 
 **If it changes.** Skipped per preview (the `continue` above): no patterns in
@@ -516,7 +521,7 @@ neighbour where the view does, and the slide gets a clone of every part.
 since the content's own size otherwise wins over a set one; `destroy()` puts
 back `CONTENT_SIZE`, no fixed size and no translation. A new wallpaper is a new
 actor, announced by `changed`, so each change places the new one. The shell
-builds new managers on `monitors-changed`, and app.js calls `update()` again then;
+builds new managers on `monitors-changed`, and wallpaper.js calls `update()` again then;
 a new picture alone goes through `setPicture()`, which keeps the adjustments.
 
 A picture wider than the monitor's shape (taller, with the workspaces in a
@@ -609,6 +614,26 @@ the nested shell) and is never whole again.
 **If it changes.** Optional-chained: the tilt then follows the pointer during a
 slide too, moving the slide's wallpaper with it.
 
+## The switch animation (switch/switch.js)
+
+Checked on 2026-10-28 against the `51.1` tags of `GNOME/gnome-shell` and `GNOME/mutter`.
+`js/ui/workspaceAnimation.js` is the same in 50.5 and 51.1, and `windowManager.js` still
+calls `_workspaceAnimation.animateSwitch` from `_switchWorkspace` and
+`cancelSwitchAnimation` on `kill-switch-workspace`.
+
+| Expression | What for | If it changes |
+|---|---|---|
+| `Main.wm._workspaceAnimation` | The `WorkspaceAnimationController` instance that animates every switch | `enable()` throws; the shell's slide stays |
+| `controller.animateSwitch` (replaced on the instance) | The one place a keyboard or programmatic switch is animated. Put back on disable only while it is still ours, to whatever was there | Switches show the shell's slide |
+| `controller._prepareWorkspaceSwitch(indices)`, `controller._switchData` (`.monitors`, `.inProgress`), `controller._finishWorkspaceSwitch(switchData)` | The shell builds and tears down the clones, the grab and unredirection exactly as for its own slide, so mutter's cancellation and the overview keep working. `_prepareWorkspaceSwitch` is the one `overview.js` wraps, so the patterns are in the groups the switch moves | `play()` throws, the half-made switch is finished and the slide runs instead |
+| `controller._swipeTracker.enabled` | Off while a scene runs, as the shell's own `animateSwitch` does, so a swipe cannot start a second switch over it | Same |
+| `monitorGroup._workspaceGroups` | The `WorkspaceGroup` (windows and wallpaper) of the outgoing and incoming workspace, moved into the scene | Same |
+
+`WorkspaceGroup`, `MonitorGroup.index` and `WorkspaceGroup.workspace` are exported or
+public members of `workspaceAnimation.js` and are not listed. The scenes' effects
+subclass `Clutter.ShaderEffect` as the patterns' do (below), each class named
+`WorkspaceFxSwitch_<id>`.
+
 ## The renderer (shader.js, engine.js)
 
 ### Subclassing `Clutter.ShaderEffect`
@@ -625,7 +650,7 @@ const Effect = class extends Clutter.ShaderEffect {
     vfunc_paint_target(node, paintContext) { ... pipeline.set_uniform_float(...) ... }
     setUniform(name, components, values) { ... }
 };
-Object.defineProperty(Effect, 'name', { value: `WallpaperFx_${effect.id}` });
+Object.defineProperty(Effect, 'name', { value: `WorkspaceFx_${effect.id}` });
 return GObject.registerClass(Effect);
 ```
 
@@ -716,8 +741,8 @@ A GType can never be unregistered, and registering a name twice throws
 shell sets `GObject.gtypeNameBasedOnJSPath = true` (`ui/environment.js`), and
 gjs 1.88 and 1.90 then name a class `Gjs_<module's directory>_<module>_<class name>`
 (`_createGTypeName()` in its `GObject.js` override): installed,
-`Gjs_lib_shader_WallpaperFx_aurora` and `Gjs_lib_overview_WallpaperFxPreviewHost`;
-staged for development, `Gjs_lib-<checksum>_shader_WallpaperFx_aurora`. The 19
+`Gjs_lib_shader_WorkspaceFx_aurora` and `Gjs_lib_overview_WorkspaceFxPreviewHost`;
+staged for development, `Gjs_lib-<checksum>_shader_WorkspaceFx_aurora`. The 19
 pattern classes come from one definition in `buildEffectClass()`, so each is given
 its JS name, with the extension's prefix, before it is registered.
 
@@ -790,8 +815,8 @@ pace at one rate there.
   the VNC extension, unless `global.force_animations` is set
   (`AnimationsSettings._shouldEnableAnimations()` in `ui/main.js`, the same at `45.0` and in 50.5).
   In all of those the patterns hold still.
-- **`org.gnome.desktop.interface accent-color`** (app.js). This key exists from
-  GNOME 47; `app.js` reads it and follows `changed::accent-color` directly. A port
+- **`org.gnome.desktop.interface accent-color`** (wallpaper.js). This key exists from
+  GNOME 47; `wallpaper.js` reads it and follows `changed::accent-color` directly. A port
   to 45 or 46 checks for it first: GJS throws on a missing key.
 - **UPower and power-profiles-daemon on the system bus** (system.js). These are
   public D-Bus services, and the version notes are in
@@ -829,7 +854,7 @@ pace at one rate there.
 ## Not shell internals: the development entry point
 
 `scripts/dev-extension.js`, the entry point `make link` installs, copies `lib/`
-into `$XDG_RUNTIME_DIR/wallpaper-fx/shell-<pid>/` after every edit and imports it
+into `$XDG_RUNTIME_DIR/workspace-fx/shell-<pid>/` after every edit and imports it
 from there, deliberately working around the shell's module cache. It is not in the
 zip; the shipped `src/extension.js` imports `./lib/app.js` statically. See
 [publishing.md](publishing.md#the-development-path-in-extensionjs).

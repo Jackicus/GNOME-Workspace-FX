@@ -14,7 +14,7 @@ Requested: $ARGUMENTS
 
 1. `./scripts/nested.sh start` (reuses one if running; opens the mirror; add
    `--clean` for every key at its default).
-2. `./scripts/nested.sh run gnome-extensions prefs wallpaper-fx@jackicus`. It
+2. `./scripts/nested.sh run gnome-extensions prefs workspace-fx@jackicus`. It
    returns once the request is sent; give the window a second.
 3. In **one** `./scripts/nested.sh do …` call: `say` what is shown, `wait 1`,
    any clicks the request needs, then `window <scratchpad>/prefs.png` (the

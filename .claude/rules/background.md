@@ -3,7 +3,7 @@ paths:
   - "src/lib/background.js"
   - "src/lib/overview.js"
   - "src/lib/palettes.js"
-  - "src/lib/app.js"
+  - "src/lib/wallpaper.js"
   - "docs/private-api.md"
 ---
 
@@ -17,7 +17,7 @@ new one goes there in the same pull request.
 - **Handed to the shell, not painted.** Every wallpaper the shell shows comes from one
   `BackgroundSource` reading `org.gnome.desktop.background`. `background.js` gives that
   source a `Gio.Settings` of its own (same schema, memory backend, so the user's dconf is
-  untouched) pointed at a palette rendered to a PNG under `~/.cache/wallpaper-fx`, or at
+  untouched) pointed at a palette rendered to a PNG under `~/.cache/workspace-fx`, or at
   the chosen picture. The base then appears wherever a wallpaper appears, including the
   copies other extensions blur, and the shell crossfades it when it changes.
 - **Reached through private fields**: a `BackgroundSource`'s `_settings` and
@@ -30,7 +30,7 @@ new one goes there in the same pull request.
 - When the shell drops and replaces the source it holds, `background.js` takes the new
   one back on an idle (`_retakeId`), removed in `release()`.
 
-## The canvas and the overview (app.js, overview.js)
+## The canvas and the overview (wallpaper.js, overview.js)
 
 - **`Main.layoutManager._backgroundGroup`** holds the patterns, over the wallpaper and
   under the windows. If the patterns stop appearing at all, check it first.

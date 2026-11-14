@@ -52,7 +52,7 @@ pattern the prelude: hashes, value noise, `glow()`, `line()`, and the time helpe
   1080p, and the compositor thread there does about 4% of a core at 60 FPS in the nested
   shell whichever are on.
 - **One class definition, a name per pattern**: `buildEffectClass()` in `shader.js` gives
-  each pattern's class the JS name `WallpaperFx_<id>` before it is registered, and keeps
+  each pattern's class the JS name `WorkspaceFx_<id>` before it is registered, and keeps
   it in a module-scope map across disable and enable (`docs/private-api.md`).
 - **Look before calling it done.** `render` is the fast loop; the nested shell is where
   motion and the overview are judged, and `start --monitors 2` is the only way to see

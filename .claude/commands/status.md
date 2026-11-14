@@ -4,11 +4,12 @@ allowed-tools: Bash(make status), Bash(./scripts/dev.sh status), Bash(./scripts/
 ---
 
 Run `./scripts/nested.sh status`, `./scripts/dev.sh status` and
-`readlink ~/.local/share/gnome-shell/extensions/wallpaper-fx@jackicus/extension.js`.
+`readlink ~/.local/share/gnome-shell/extensions/workspace-fx@jackicus/extension.js`.
 If a nested shell is running, also read what it draws with
 `./scripts/nested.sh run timeout 5 gsettings --schemadir src/schemas get
-org.gnome.shell.extensions.wallpaper-fx <key>` (or `list-recursively
-org.gnome.shell.extensions.wallpaper-fx` for the lot). Report in two parts.
+org.gnome.shell.extensions.workspace-fx <key>` (or `list-recursively` for the lot, and
+the same for its `.titles` and `.switch` child schemas, which hold whether the titles and
+the switch animation are on). Report in two parts.
 
 **Nested shell** (where changes are tried):
 
@@ -17,7 +18,7 @@ org.gnome.shell.extensions.wallpaper-fx` for the lot). Report in two parts.
 - **extension** — `ACTIVE` is healthy; `ERROR` means `enable()` threw
   (`/logs`); anything else after a `reload`, see `/logs` too.
 - **settings** — always its own: kept between runs under
-  `~/.local/state/gnome-extensions-nested/wallpaper-fx/` (`start --clean` resets
+  `~/.local/state/gnome-extensions-nested/workspace-fx/` (`start --clean` resets
   them), or fresh for the run under `--stand-in`, whose **data** line names its
   scratch home.
 - **mirror** — open on the desktop, or closed (`./scripts/nested.sh mirror on`).

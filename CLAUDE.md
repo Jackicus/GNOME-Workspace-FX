@@ -1,23 +1,28 @@
-# Wallpaper FX
+# Workspace FX
 
 Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
 
-A GNOME Shell extension (UUID `wallpaper-fx@jackicus`; written for and claiming GNOME
-Shell 51) that paints stackable animated patterns over the desktop: GPU shaders
-on actors sitting on the wallpaper itself, no window. Settings are a libadwaita prefs
-dialog. The log prefix is `[WallpaperFx]`.
+A GNOME Shell extension (UUID `workspace-fx@jackicus`; written for and claiming GNOME
+Shell 51) in three parts. **The wallpaper** paints stackable animated patterns over the
+desktop: GPU shaders on actors sitting on the wallpaper itself, no window. **Titles** show
+a workspace's name with the shell's switcher popup and edit it in place
+(`.claude/rules/titles.md`). **The switch animation** turns a keyboard workspace switch
+into a camera move through a cel-shaded scene (`.claude/rules/switch.md`). Settings are a
+libadwaita prefs dialog. The log prefix is `[WorkspaceFx]`. It was Wallpaper FX until
+Workspace Titles and Workspace Scenes were merged in; their histories are this
+repository's `archive/workspace-titles` and `archive/workspace-scenes` tags.
 
 ## Checking and seeing it
 
-This extension's own tooling: `./scripts/dev.d/wallpaper-fx.sh` (`shaders`, `counts`, `prefs`),
-the Makefile's `zip`, `bench` and `prefs`, and `./scripts/nested.d/wallpaper-fx.sh`
+This extension's own tooling: `./scripts/dev.d/workspace-fx.sh` (`shaders`, `counts`, `prefs`),
+the Makefile's `zip`, `bench` and `prefs`, and `./scripts/nested.d/workspace-fx.sh`
 (`weather-place`, a stand-in GNOME Weather place in the nested settings, and GNOME
 Weather's desktop entry under `--stand-in`).
 
 - **`make check`** is everything that needs no shell, display or GPU, and what CI runs:
   `make lint`, then `./scripts/dev.sh check`: the schema under `--strict`, and
-  `./scripts/dev.sh shaders` (`node scripts/shaders.mjs check`), every pattern's shader
-  compiled by `glslangValidator` in each GLSL dialect Cogl may use. CI installs
+  `./scripts/dev.sh shaders` (`node scripts/shaders.mjs check`), every pattern's and
+  switch scene's shader compiled by `glslangValidator` in each GLSL dialect Cogl may use. CI installs
   `glslang` through `.github/ci-packages`.
   `./scripts/dev.sh counts` then checks that every "N patterns" in the README,
   `metadata.json` and `docs/` matches `EFFECTS` in `lib/catalog.js`.
@@ -46,7 +51,10 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   an install compiles the shaders once and reuses them across every lock and unlock.
   Under the link, an unlock with no edit between reuses the same stage, and so the
   compiled shaders, as an install does.
-- `lib/app.js`: reads settings, works out what each monitor draws (its own canvas, or
+- `lib/app.js`: `WorkspaceFxApp`, the three parts: the wallpaper always, titles
+  (`lib/titles/`) and the switch animation (`lib/switch/`) each while the `enabled` key
+  of its child schema is on, enabled and disabled live as it changes.
+- `lib/wallpaper.js`: `WorkspaceFxWallpaper`, reads settings, works out what each monitor draws (its own canvas, or
   its part of one spanning all of them), builds one `MonitorRenderer` per monitor into
   `Main.layoutManager._backgroundGroup` (over the wallpaper, under the windows),
   rebuilds on `monitors-changed`, refits the layers' canvases in place on
@@ -75,9 +83,9 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   by their catalog `depth` (`MonitorRenderer.pan()`); `.claude/rules/parallax.md`.
 - `lib/system.js`: the system's say: UPower's `OnBattery` (for `pause-on-battery`),
   power-profiles-daemon's active profile, and St's `enable-animations` and `reduced-motion`.
-- `lib/daytime.js`: `Daytime`, kept by app.js only while the base is `daytime`: the period
+- `lib/daytime.js`: `Daytime`, kept by wallpaper.js only while the base is `daytime`: the period
   of the day at GNOME Weather's place, with one timer to the next change.
-- `lib/pointer.js`: `PointerTrail`, kept by app.js only while a React pattern (catalog
+- `lib/pointer.js`: `PointerTrail`, kept by wallpaper.js only while a React pattern (catalog
   `react`) is on: the pointer's samples from the cursor tracker over the last three
   seconds, handed to each React layer's `State` in its own canvas pixels.
 - `lib/weather.js`: `WeatherWatcher`, for the weather scene: a GWeather report for the
@@ -91,7 +99,13 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   for what layers work out on the CPU, and the helpers they generate GLSL with (`num`,
   `vec3`, `slots`).
 - `prefs.js`, `schemas/`: the settings dialog (Scenes, with the weather and the user's
-  own; Patterns; Background; Performance) and the keys behind it.
+  own; Patterns; Background; Titles and Switching, from `lib/titles/prefs.js` and
+  `lib/switch/prefs.js`; Performance) and the keys behind it. The wallpaper's keys are
+  `org.gnome.shell.extensions.workspace-fx`; the titles' and the switch animation's are
+  its `.titles` and `.switch` child schemas, at `titles/` and `switch/` under its path,
+  each read through its own `Gio.Settings`, so the wallpaper's `changed` handler never
+  sees them.
+- `stylesheet.css`: the titles' only (`workspace-fx-titles-*`).
 
 ## How it fits together
 
@@ -119,7 +133,7 @@ function of time and every clock is shared, the parts agree without talking to e
 other. Saved scenes are prefs-only: applying one writes a handful of keys, and the
 extension simply follows them.
 
-**The weather is a scene that changes by itself.** With `weather` on, app.js keeps a
+**The weather is a scene that changes by itself.** With `weather` on, wallpaper.js keeps a
 `WeatherWatcher`, and while it has a report its look stands in for `enabled-effects`,
 `pattern-tuning` and, with `weather-background`, the base, in `_state()`; the user's own
 keys are never written, so turning it off brings their look straight back, and prefs
@@ -141,6 +155,13 @@ desktop. The next paint of the desktop (a window moving away, the overview openi
 setting changing) starts the frames again, so none of those cases needs a signal of its
 own. Paints through a clone (the overview, the workspace slide) never count as covered.
 
+**Two words for scene.** The wallpaper's saved scenes (`lib/scenes.js`, the Scenes
+page) are looks; the switch animation's scenes (`lib/switch/scenes.js`, chosen on the
+Switching page) are what a switch passes through. Neither module knows the other.
+
+**The switch durations are 400–2000 ms** (default 900), outside the kit's 100–250 ms: a
+pull back, a run and an arrival do not fit in a quarter of a second.
+
 ## Traps of its own
 
 - **A shader mistake is silent in the shell**: a pattern that fails to compile draws
@@ -160,6 +181,10 @@ own. Paints through a clone (the overview, the workspace slide) never count as c
   not a window, so behind a maximized window the strip under the top bar keeps the whole
   monitor repainting. That is what `pause-when-covered` is for. It also means a CPU
   reading taken while something covers the desktop is measuring something else.
+- **Two parts reach into the same switch.** `overview.js` wraps the controller's
+  `_prepareWorkspaceSwitch` to put the patterns into each workspace group; the switch
+  animation replaces `animateSwitch` and moves those groups into its scene, so the
+  patterns ride along on the cards. A change to either is checked with both on.
 - **A layer whose `State` throws** throws out of the paint: GJS logs it and the layer
   draws nothing and books no further frame, so a broken pattern looks like one that was
   never enabled.

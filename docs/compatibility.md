@@ -1,12 +1,24 @@
 # Compatibility
 
 `metadata.json` claims GNOME Shell 51, and the code is written for it alone.
-Release 1.2 was the last for GNOME 50. This page lists what has been tested, every code
+Release 1.2, as Wallpaper FX, was the last for GNOME 50. This page lists what has been tested, every code
 path that depends on the shell's version, and what a port to another version
 (`gnome-ext:port-shell-version`) has to change or check first.
 
 ## What has been tested
 
+Until 2026-11-14 the extension was Wallpaper FX (`wallpaper-fx@jackicus`, log prefix
+`[WallpaperFx]`), and the titles and the switch animation were Workspace Titles and
+Workspace Scenes; the runs below on earlier dates were of those.
+
+- **Workspace FX, merged: GNOME Shell 51.1** on the main desktop (NVIDIA GTX 1080), in
+  the nested shell on 2026-11-14, through the development link: enable from a clean
+  start, the Corridor switch with the patterns riding on the cards, a title on a named
+  workspace and none on an unnamed one, the rename editor, the titles and the switch
+  animation turned off and on again live (the pencil and the scene go and come back),
+  both together, the preferences' six pages with their on/off switches greying their
+  rows, a disable and enable, and a `stop` and `start`. No errors with the
+  `[WorkspaceFx]` prefix.
 - **The main desktop: GNOME Shell 51.1** on CachyOS (Arch-based), Wayland, with
   an NVIDIA GeForce GTX 1080 on the proprietary driver 580.178.04. The rest of
   the stack on that machine: mutter 51.1, GJS 1.90.1, GLib 2.90.1, GTK 4.24.1,
@@ -157,10 +169,10 @@ back on disable.
 and confirm the user's own wallpaper comes back. A `No background source to take
 over` line in the journal means the takeover failed.
 
-### Accent Color mode (app.js, palettes.js)
+### Accent Color mode (wallpaper.js, palettes.js)
 
 The `accent` mode follows `org.gnome.desktop.interface accent-color`, which
-GNOME 47 added (gjs.guide, "Port Extensions to GNOME Shell 47"). `app.js` reads
+GNOME 47 added (gjs.guide, "Port Extensions to GNOME Shell 47"). `wallpaper.js` reads
 the key and connects `changed::accent-color` directly. On 45 and 46 the key is
 missing and GJS throws on reading it (`Error: GSettings key ... not found in
 schema org.gnome.desktop.interface` on GJS 1.88), so `enable()` would fail; a
@@ -289,6 +301,39 @@ should open the file chooser, and you should be able to save and delete a scene.
   51, and the wrapper it returns must be called with `new` (gjs.guide, 51 port
   page). `system.js` already does (`new Proxy(...)` in `_watch()`).
 
+### The titles (titles/)
+
+Read at `50.5` and `51.1` on 2026-10-28, and booted on 51.1 as Workspace Titles.
+
+- **`St.FocusManager.navigate_from_event()` is gone** (gnome-shell 5ca6fb233). The
+  editor called it from its key handler for Tab and the arrows. Each focus group now
+  carries a `Clutter.KeyController` that navigates by itself, under a grab too, but key
+  events only pass through reactive actors (mutter's `clutter_actor_collect_event_actors`),
+  so the editor's box is made reactive. A click on the box itself no longer cancels.
+- **Unchanged and checked**: `ui/workspaceSwitcherPopup.js` (no diff: `display`,
+  `_redisplayAllPopups` calling `redisplay` on every child, `ANIMATION_TIME`),
+  `Main.wm.insertWorkspace` and `addKeybinding`, `Main.panel.statusArea.activities` and
+  its `hover`, `PanelMenu.Button`'s `_init(alignment, name, dontCreateMenu)`,
+  `Layout.MonitorConstraint`, `Main.pushModal`, `St.Entry`'s `hint_text` and
+  `clutter_text`.
+- **Event signals give way to controllers**: 51 deprecates connecting to the event signals,
+  and its own `js/` overrides none of their vfuncs. The pencil's Return and space are a
+  `Clutter.KeyController`, the editor's Escape another, and its press outside the box a
+  `Clutter.ClickGesture` that recognizes on press, as `PopupMenuManager` closes a menu.
+- Seen working then: the title on a keyboard switch (none for an unnamed workspace), hover
+  on the workspace dots, the pencil, renaming by typing, ✕ by click, Tab, Shift+Tab and
+  the arrows between the entry and its buttons, Escape and a click outside, the editor
+  over the overview, an insert with dynamic workspaces, the preferences, and `stop` +
+  `start`.
+
+### The switch animation (switch/)
+
+Read 2026-10-28 at gnome-shell 51.1: `ui/workspaceAnimation.js` is the same as at 50.5,
+and every reach in [private-api.md](private-api.md) is there. `Shell.GLSLEffect` is gone
+in 51, so each scene is a `Clutter.ShaderEffect` returning its snippet from
+`vfunc_get_static_snippet()`; every uniform is at most a vec4, which is all its
+`set_uniform_float()` holds. Booted on 51.1 as Workspace Scenes (nested, main desktop).
+
 ## Checklist for a new GNOME version
 
 1. Read gjs.guide's "Port Extensions to GNOME Shell N" page and search it for
@@ -303,7 +348,7 @@ should open the file chooser, and you should be able to save and delete a scene.
    changed, add it to `DIALECTS`, then run `make check`.
 4. Install the zip rather than the development link: `make uninstall`, then
    `make zip`, then
-   `gnome-extensions install dist/wallpaper-fx@jackicus.shell-extension.zip`,
+   `gnome-extensions install dist/workspace-fx@jackicus.shell-extension.zip`,
    then log out and in. This tests what users get: the shipped
    `src/extension.js`, the schema compiled on install, and `lib/` imported in
    place. `make link` puts the link back afterwards. **Do not use
