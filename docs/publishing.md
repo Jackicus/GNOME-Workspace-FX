@@ -12,7 +12,7 @@ and [Best Practices](https://gjs.guide/extensions/review-guidelines/best-practic
 make zip
 ```
 
-This runs `./scripts/dev.sh pack` (the kit's, shared by every extension), which:
+This runs `./scripts/dev.sh pack`, which:
 
 1. runs `glib-compile-schemas --strict --dry-run` on `src/schemas`, and stops if
    it fails: an install compiles the schema with `--strict`, so a warning here
@@ -379,7 +379,7 @@ URL each time. That staging lives outside what ships:
       this._app = null;
   }
   ```
-- `scripts/dev-extension.js` is the development entry point (the kit's): an
+- `scripts/dev-extension.js` is the development entry point: an
   async `enable()` that copies `lib/` to
   `$XDG_RUNTIME_DIR/workspace-fx/shell-<pid>/lib-<checksum>/`, a directory of the
   running shell's own named for a checksum of the files, and imports `app.js`
@@ -400,7 +400,7 @@ that could drift, so packing does not do that.
 
 ## Still open
 
-1. **More versions.** Another version is a port (`gnome-ext:port-shell-version`):
+1. **More versions.** Another version is a port (`port-shell-version`):
    it adds what that version needs, and joins `shell-version` once the zip has
    been through the checklist in [compatibility.md](compatibility.md) on it.
 2. **Optional tidying.** Move `lib/scenes.js`, which only the preferences use,

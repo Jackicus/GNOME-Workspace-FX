@@ -1,8 +1,8 @@
-include scripts/kit.mk
+include scripts/common.mk
 
 .PHONY: zip bench prefs
 
-# The extensions.gnome.org upload, in dist/: the kit's pack under its old name.
+# The extensions.gnome.org upload, in dist/: `make pack` under its old name.
 zip: pack
 
 # Every pattern's shader timed on the real GPU: not in check, which CI runs without one.

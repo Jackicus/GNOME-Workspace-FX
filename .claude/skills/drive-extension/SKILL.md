@@ -1,11 +1,11 @@
 ---
 name: drive-extension
-description: What is particular to driving Workspace FX in the nested GNOME Shell - the start flags that matter here (--clean, --monitors, --stand-in), the settings that change what is drawn, the workspace titles and their editor, a switch animation caught phase by phase, comparing animated frames, measuring, and the README's screenshots. Read the kit's gnome-ext:nested-shell skill first; use this whenever a pattern's look, colours, palettes, opacity, motion, the overview or prefs layout must be SEEN.
+description: What is particular to driving Workspace FX in the nested GNOME Shell - the start flags that matter here (--clean, --monitors, --stand-in), the settings that change what is drawn, the workspace titles and their editor, a switch animation caught phase by phase, comparing animated frames, measuring, and the README's screenshots. Read the nested-shell skill first; use this whenever a pattern's look, colours, palettes, opacity, motion, the overview or prefs layout must be SEEN.
 ---
 
 # Driving Workspace FX in the nested shell
 
-Read **`gnome-ext:nested-shell`** first: the loop, `do` and its steps, `reload` versus
+Read **`nested-shell`** first: the loop, `do` and its steps, `reload` versus
 `stop` + `start`, the logs, the preferences and stopping are all there and not repeated
 here. This is what differs for Workspace FX.
 
@@ -125,7 +125,7 @@ $N --schemadir src/schemas set org.gnome.shell.extensions.workspace-fx.switch sc
 
 - **A pattern that is missing** while the others draw is usually a shader that did not
   compile: `make check` names the line.
-- **Measure with the mirror on**: headless never paints (`gnome-ext:nested-shell`).
+- **Measure with the mirror on**: headless never paints (`nested-shell`).
 
 ## The README's screenshots
 

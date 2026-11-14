@@ -1,6 +1,6 @@
 # Workspace FX
 
-Shared rules for every extension come from gnome-ai-kit: `../CLAUDE.md` and `../.claude/rules/` (loaded with this file), and the `gnome-ext:*` skills. `.claude/kit.sh` pulls the kit at session start, or, with no kit beside this repository, fetches it and prints its rules into the session.
+What holds for any extension worked on this way is in `.claude/rules/` (`workflow.md`, `live-session.md`, `simplicity.md`, `gjs-st.md`), loaded with this file, and the skills are in `.claude/skills/`.
 
 A GNOME Shell extension (UUID `workspace-fx@jackicus`; written for and claiming GNOME
 Shell 51) in three parts. **The wallpaper** paints stackable animated patterns over the
@@ -30,12 +30,12 @@ Day base's sun).
   `node scripts/shaders.mjs render PATTERN` (frames of one pattern to a PNG, with no
   shell at all: the quick loop for a pattern's look).
 - **Seen in the nested shell** for motion, the overview, prefs and two monitors: the
-  `gnome-ext:nested-shell` skill, then `.claude/skills/drive-extension/SKILL.md` for what
+  `nested-shell` skill, then `.claude/skills/drive-extension/SKILL.md` for what
   is particular here. `/reload`, `/logs`, `/status`, `/prefs` and `/preview` use the
   nested shell; `make prefs` is the user's own session, theirs to run.
 - **`make zip`** is `make pack` (`./scripts/dev.sh pack`): the zip in `dist/`, checked
   to hold exactly what ships. The `Release` workflow runs the same on a pushed `v*` tag
-  (`gnome-ext:release`).
+  (`release`).
 
 `docs/` holds what is not about working on the code day to day:
 **`docs/patterns.md`, the contract a pattern keeps: read it before writing or changing
@@ -120,7 +120,7 @@ that base in catalog order, each tuned by `pattern-tuning` (brightness, speed, A
 multipliers of its design). `speed` scales every clock and `opacity` is the monitor
 actor's opacity, which each shader multiplies in.
 A pattern switched on or off fades over the shell's own wallpaper crossfade
-(`FADE_ANIMATION_TIME` from `ui/background.js`, 1000 ms on 51), not the kit's 100–250 ms:
+(`FADE_ANIMATION_TIME` from `ui/background.js`, 1000 ms on 51), not `gjs-st.md`'s 100–250 ms:
 a new base crossfades at the same moment, and the two land together.
 
 With `span-monitors`, every monitor draws its part of one canvas (the box around them
@@ -152,7 +152,7 @@ own. Paints through a clone (the overview, the workspace slide) never count as c
 page) are looks; the switch animation's scenes (`lib/switch/scenes.js`, chosen on the
 Switching page) are what a switch passes through. Neither module knows the other.
 
-**The switch durations are 400–2000 ms** (default 900), outside the kit's 100–250 ms: a
+**The switch durations are 400–2000 ms** (default 900), outside `gjs-st.md`'s 100–250 ms: a
 pull back, a run and an arrival do not fit in a quarter of a second.
 
 ## Traps of its own
