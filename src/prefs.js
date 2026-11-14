@@ -3,14 +3,12 @@ import Adw from 'gi://Adw';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
-import GioUnix from 'gi://GioUnix';
 
 import { EFFECTS } from './lib/catalog.js';
 import { switchPage } from './lib/switchPrefs.js';
 import { titlesPage } from './lib/titlesPrefs.js';
 import { PALETTES } from './lib/palettes.js';
 import { SCENE_KEYS, applyScene, deleteScene, isCurrent, saveScene, savedScenes } from './lib/scenes.js';
-import { weatherPlace } from './lib/weather.js';
 
 const tuningOf = settings => settings.get_value('pattern-tuning').deepUnpack();
 const setTuning = (settings, all) => settings.set_value('pattern-tuning', new GLib.Variant('a{sa{sd}}', all));
@@ -25,32 +23,6 @@ function writeTuning(settings, id, key, value) {
     setTuning(settings, all);
 }
 
-function weatherStatus(settings) {
-    if (!settings.get_boolean('weather'))
-        return { text: 'Off: your own patterns are showing', icon: 'weather-few-clouds-symbolic' };
-
-    const status = settings.get_value('weather-status').recursiveUnpack();
-    const place = status.place;
-    const report = status.summary ? `${status.summary}${status.temperature ? `, ${status.temperature}` : ''} in ${place}` : '';
-    const icon = status.icon || 'weather-few-clouds-symbolic';
-    const waiting = 'content-loading-symbolic';
-    switch (status.state) {
-    case 'ready':
-        return { text: report, icon };
-    case 'failed':
-        return report
-            ? { text: `${report} (the weather service could not be reached since)`, icon }
-            : { text: `The weather service could not be reached for ${place}; trying again shortly`, icon: 'network-offline-symbolic' };
-    case 'fetching':
-        return { text: `Getting the weather for ${place}…`, icon: waiting };
-    case 'no-place':
-        return { text: 'Choose a place in GNOME Weather', icon: 'find-location-symbolic' };
-    default:
-        // Nothing written yet: the extension is off, or has only just been asked.
-        return { text: 'Starting…', icon: waiting };
-    }
-}
-
 export default class WorkspaceFxPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
@@ -62,16 +34,9 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
         const handlerId = settings.connect('changed', (_s, key) => {
             for (const [k, fn] of watchers) if (k === key) fn();
         });
-        const shellWeather = new Gio.Settings({ schema_id: 'org.gnome.shell.weather' });
-        const placeId = shellWeather.connect('changed::locations', () => {
-            for (const [k, fn] of watchers) if (k === 'weather-locations') fn();
-        });
-        window.connect('close-request', () => {
-            settings.disconnect(handlerId);
-            shellWeather.disconnect(placeId);
-        });
+        window.connect('close-request', () => settings.disconnect(handlerId));
 
-        const ui = { window, settings, shellWeather, watch: (key, fn) => watchers.push([key, fn]) };
+        const ui = { window, settings, watch: (key, fn) => watchers.push([key, fn]) };
         window.add(this._scenesPage(ui));
         window.add(this._patternsPage(ui));
         window.add(this._backgroundPage(ui));
@@ -121,73 +86,20 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
     }
 
     _scenesPage(ui) {
-        const page = new Adw.PreferencesPage({ title: 'Scenes', icon_name: 'view-grid-symbolic' });
-        page.add(this._weatherGroup(ui));
-        page.add(this._savedGroup(ui));
-        return page;
-    }
-
-    _weatherGroup(ui) {
-        const { settings, shellWeather } = ui;
-        const group = new Adw.PreferencesGroup({
-            title: 'Weather',
-            description: 'Let the weather where you are choose the patterns, and the time of day the sky: ' +
-                'rain, snow, fog, a storm or a clear night, as it happens there.',
-        });
-
-        const follow = this._switchRow(ui, 'weather', { title: 'Follow the Weather', subtitle_lines: 0 });
-        const icon = new Gtk.Image({ icon_name: 'weather-few-clouds-symbolic' });
-        follow.add_prefix(icon);
-        group.add(follow);
-
-        const showStatus = () => {
-            const status = weatherStatus(settings);
-            follow.subtitle = status.text;
-            icon.icon_name = status.icon;
-        };
-        showStatus();
-        for (const key of ['weather', 'weather-status'])
-            ui.watch(key, showStatus);
-
-        group.add(this._switchRow(ui, 'weather-background', {
-            title: 'Weather Sets the Sky',
-            subtitle: 'Draw the patterns over a sky for the time of day, instead of the Background page\'s choice',
-        }));
-
-        // The place is GNOME Weather's, as in the calendar: the extension never looks for the user.
-        const app = GioUnix.DesktopAppInfo.new('org.gnome.Weather.desktop');
-        const place = new Adw.ActionRow({ title: 'Place', subtitle_lines: 0, activatable: !!app });
-        if (app) {
-            place.add_suffix(new Gtk.Image({ icon_name: 'adw-external-link-symbolic' }));
-            place.connect('activated', () => app.launch([], null));
-        }
-        const showPlace = () => {
-            const name = weatherPlace(shellWeather)?.get_name();
-            place.subtitle = name ? `${name}, from GNOME Weather`
-                : app ? 'None: choose one in GNOME Weather' : 'None: install GNOME Weather and choose one there';
-        };
-        showPlace();
-        ui.watch('weather-locations', showPlace);
-        group.add(place);
-
-        return group;
-    }
-
-    _savedGroup(ui) {
         const { settings } = ui;
+        const page = new Adw.PreferencesPage({ title: 'Scenes', icon_name: 'view-grid-symbolic' });
         const group = new Adw.PreferencesGroup({
             title: 'Your Scenes',
             description: 'The patterns you chose, how each is tuned and what they are drawn over, kept to come ' +
-                'back to in one click. Choosing one stops following the weather.',
+                'back to in one click.',
         });
 
         const ticks = [];
         const refreshTicks = () => {
             for (const [scene, tick] of ticks) tick.visible = isCurrent(settings, scene);
         };
-        for (const key of [...SCENE_KEYS, 'weather']) ui.watch(key, refreshTicks);
+        for (const key of SCENE_KEYS) ui.watch(key, refreshTicks);
 
-        // While the weather chooses, what shows is not the user's look.
         const save = new Adw.EntryRow({ title: 'Save Your Look As…', show_apply_button: true });
         save.connect('apply', () => {
             const name = save.text.trim();
@@ -195,13 +107,6 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
             saveScene(settings, name);
             save.text = '';
         });
-        const showSave = () => {
-            const weather = settings.get_boolean('weather');
-            save.sensitive = !weather;
-            save.tooltip_text = weather ? 'Stop following the weather to save a look of your own' : '';
-        };
-        showSave();
-        ui.watch('weather', showSave);
         group.add(save);
 
         let rows = [];
@@ -230,33 +135,13 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
         showSaved();
         ui.watch('saved-scenes', showSaved);
 
-        return group;
-    }
-
-    _weatherNotice(ui, what, active, keys) {
-        const group = new Adw.PreferencesGroup();
-        const row = new Adw.ActionRow({
-            title: `The weather is choosing ${what}`,
-            subtitle: 'Yours are kept, and come back when you stop following the weather',
-        });
-        row.add_prefix(new Gtk.Image({ icon_name: 'weather-few-clouds-symbolic' }));
-        const button = new Gtk.Button({ label: 'Choose My Own', valign: Gtk.Align.CENTER });
-        button.connect('clicked', () => ui.settings.set_boolean('weather', false));
-        row.add_suffix(button);
-        group.add(row);
-
-        const show = () => (group.visible = active());
-        show();
-        for (const key of keys) ui.watch(key, show);
-        return group;
+        page.add(group);
+        return page;
     }
 
     _patternsPage(ui) {
         const { settings } = ui;
         const page = new Adw.PreferencesPage({ title: 'Patterns', icon_name: 'view-wrapped-symbolic' });
-
-        const weather = () => settings.get_boolean('weather');
-        page.add(this._weatherNotice(ui, 'the patterns', weather, ['weather']));
 
         const groups = [
             new Adw.PreferencesGroup({
@@ -265,17 +150,14 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
             }),
             new Adw.PreferencesGroup({
                 title: 'Weather',
-                description: 'The patterns the weather scene draws, which you can also switch on yourself.',
+                description: 'Rain, snow, fog, a storm, clouds and sunlight, to stack with the others.',
             }),
             new Adw.PreferencesGroup({
                 title: 'React',
                 description: 'Patterns that answer the pointer as it moves over the desktop.',
             }),
         ];
-        const lock = () => groups.forEach(g => (g.sensitive = !weather()));
         for (const group of groups) page.add(group);
-        lock();
-        ui.watch('weather', lock);
 
         const enabled = () => new Set(settings.get_strv('enabled-effects'));
         for (const effect of EFFECTS) {
@@ -405,17 +287,11 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
             icon_name: 'preferences-desktop-wallpaper-symbolic',
         });
 
-        const weather = () => settings.get_boolean('weather') && settings.get_boolean('weather-background');
-        page.add(this._weatherNotice(ui, 'the sky', weather, ['weather', 'weather-background']));
-
         const group = new Adw.PreferencesGroup({
             title: 'Base Layer',
             description: 'What the patterns are drawn over. The overview and the workspace switcher show it too.',
         });
         page.add(group);
-        const lock = () => (group.sensitive = !weather());
-        lock();
-        for (const key of ['weather', 'weather-background']) ui.watch(key, lock);
 
         group.add(this._comboRow(ui, {
             key: 'background-mode',

@@ -37,7 +37,7 @@ export class State { ... }
   with its id (`drizzleDrop`, `drizzle_meteor`), because a pattern's GLSL is
   compiled alongside the shared prelude and names must not collide.
 - The catalog entry adds `id`, `title` and `desc` (the prefs dialog shows the
-  last two), `weather: true` for a pattern the weather scene draws and `react: true`
+  last two), `weather: true` for one of the weather's own (rain, fog, a storm…) and `react: true`
   for one that answers the pointer (prefs lists each under its own heading), `depth` (how many times as far as the wallpaper
   it pans with parallax: about 1.2 for a far sky, 3.5 for what is nearest) and
   spreads the module in.

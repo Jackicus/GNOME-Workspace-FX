@@ -829,7 +829,7 @@ pace at one rate there.
   `Main.layoutManager.getWorkAreaForMonitor()`, `global.get_window_actors()`,
   `Meta.Window.located_on_workspace()` and `get_frame_rect()`. All of them are
   public.
-- **GNOME Weather's place** (weather.js, prefs.js). The weather follows the
+- **GNOME Weather's place** (daytime.js). The Time of Day base reads the
   first entry of `org.gnome.shell.weather` `locations`, a serialized
   `GWeather.Location` read back with `GWeather.Location.get_world().deserialize()`.
   The schema is GNOME Shell's own and always installed with it. The shell keeps
@@ -837,23 +837,16 @@ pace at one rate there.
   `org.gnome.Shell.WeatherIntegration` D-Bus interface whenever GNOME Weather
   is running, flatpak or not (`WeatherClient._onWeatherPropertiesChanged()` in
   `misc/weather.js`, 50.0), and reads its first entry for the calendar's weather
-  the same way. The extension only reads it and never asks for a location: when
-  GNOME Weather is set to find the user automatically, the shell asks Geoclue
-  for the calendar, but the extension still uses the first listed place.
-  Not used instead: a `WeatherClient` of its own (the class connects to the
-  permission store, settings and the app system and has no `destroy()`, so each
-  enable would leak one, and it asks Geoclue), and the shell's own instance
+  the same way. The extension only reads it, to work out where the sun is, and
+  never asks for a location or goes to the network: when GNOME Weather is set to
+  find the user automatically, the shell asks Geoclue for the calendar, but the
+  extension still uses the first listed place. Not used instead: a
+  `WeatherClient` of its own (the class connects to the permission store,
+  settings and the app system and has no `destroy()`, so each enable would leak
+  one, and it asks Geoclue), and the shell's own instance
   (`Main.panel.statusArea.dateMenu._weatherItem._weatherClient`, private, and
   updated only when the calendar opens). If the key moves or changes format, the
-  place reads as none and the preferences say to choose one in GNOME Weather.
-- **GWeather** (weather.js). This is libgweather 4, which the shell
-  depends on for its own weather. The extension enables only the METAR and
-  MET Norway providers, and names itself to them by `application_id` and
-  `contact_info`, as MET Norway's terms ask. The location it sets is GNOME
-  Weather's, a city of GWeather's list with its METAR station.
-  Through GWeather, MET Norway gives no current conditions, only hourly
-  forecasts starting about an hour ahead, so its first slot stands in wherever
-  no station has reported.
+  place reads as none and the time of day follows the clock.
 
 ## Not shell internals: the development entry point
 

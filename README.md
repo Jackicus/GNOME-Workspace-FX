@@ -1,8 +1,8 @@
 # Workspace FX
 
 Your GNOME desktop and workspaces, animated. Animated wallpapers drawn by your GPU: aurora,
-nebulae, starfields, snow, rain and more, nineteen patterns you can stack and tune, or let
-the weather outside choose, painted behind your windows and in the overview. Names for your
+nebulae, starfields, snow, rain and more, nineteen patterns you can stack and tune, painted
+behind your windows and in the overview. Names for your
 workspaces, shown in large type as you switch to one. And workspace switches as a camera
 move through a scene.
 
@@ -19,8 +19,6 @@ three can be turned off on its own.
 - **Depth.** With Workspace Parallax the background slides a little as you change
   workspace, each pattern by its own distance, and Pointer Tilt leans it away from the
   pointer.
-- **Follows the weather.** Rain where you are when it rains there, fog, snow, a storm or a
-  clear night, and a sky that follows the time of day.
 - **Scenes.** Save a look and come back to it in one click.
 - **No window and no video.** The patterns are drawn on the wallpaper itself, so they
   show in the overview and the workspace switcher too.
@@ -31,45 +29,10 @@ three can be turned off on its own.
 - **Switch animation.** A workspace switch pulls back into a cel-shaded scene, races
   through it and arrives at the next workspace.
 
-## Weather
-
-Turn on **Follow the Weather** on the Scenes page and the desktop shows the weather where
-you are: rain when it is raining there, fog in fog, snow, a thunderstorm with lightning, or
-a clear starry night. The sky follows the time of day from dawn to dusk, worked out from
-where the sun is, so it moves on between reports and without a network. Wind speeds up
-the clouds, the fog and whatever is falling.
-
-<table>
-  <tr>
-    <td align="center" width="33%"><img src="docs/screenshots/weather/clear-day.jpg" alt="A clear blue sky with rays of sunlight from the top left"><br><b>Clear day</b></td>
-    <td align="center" width="33%"><img src="docs/screenshots/weather/scattered-cloud.jpg" alt="White clouds scattered across a blue sky"><br><b>Scattered cloud</b></td>
-    <td align="center" width="33%"><img src="docs/screenshots/weather/dawn.jpg" alt="A violet and rose dawn sky with a few clouds and faint rays"><br><b>Dawn</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/weather/clear-night.jpg" alt="Small stars on a dark blue night sky"><br><b>Clear night</b></td>
-    <td align="center"><img src="docs/screenshots/weather/rain.jpg" alt="Grey clouds with thin streaks of rain"><br><b>Light rain</b></td>
-    <td align="center"><img src="docs/screenshots/weather/snow.jpg" alt="Grey clouds with snowflakes falling in front of them"><br><b>Snow</b></td>
-  </tr>
-</table>
-
-It follows the place you chose in [GNOME Weather](https://apps.gnome.org/Weather/): the
-first in its list, which GNOME Shell keeps for the calendar's weather. Choose or change it
-in GNOME Weather (the **Place** row in the preferences opens it); the extension never looks
-for you itself. If GNOME Weather is set to find your location automatically, the extension
-still uses the first place in its list. The weather comes from [GWeather](https://gitlab.gnome.org/GNOME/libgweather), the library GNOME's own
-weather uses: the nearest airport's weather station for what it sees now, and MET Norway's
-forecast for the coming hour where the station has said nothing for two hours. It asks
-again every half hour, and straight away when the place changes by more than 10 km. What
-goes over the network is in [Privacy and network](#privacy-and-network).
-
-While the weather is choosing, your own patterns and background are kept, and come back
-when you turn it off. Turn off **Weather Sets the Sky** to keep your own background under
-the weather's patterns.
-
-### Your scenes
+## Your scenes
 
 Set up a look on the Patterns and Background pages and save it with **Save Your Look
-As…** on the Scenes page. Choosing a saved scene stops following the weather.
+As…** on the Scenes page.
 
 ## Patterns
 
@@ -191,50 +154,20 @@ off, switches are instant, as they are without it.
 - A GPU with 3D acceleration. Without it GNOME turns animations off (as it does in virtual
   machines without 3D acceleration and in remote-desktop sessions), and the patterns hold
   still.
-- For the weather, a network connection and [GNOME Weather](https://apps.gnome.org/Weather/)
-  with a place chosen in it.
-
-Nothing outside GNOME: the weather uses GWeather, which GNOME Shell's own weather uses, and
-the place GNOME Weather shares with the shell, and pausing follows UPower and power-profiles-daemon where they
-are installed.
+Nothing outside GNOME: pausing follows UPower and power-profiles-daemon where they are
+installed.
 
 ## Privacy and network
 
-Follow the Weather is off until you turn it on, and it is the only thing that goes online.
-While it is off, nothing is sent anywhere. The Time of Day base reads the same GNOME
-Weather place to work out where the sun is, on your machine, and sends nothing.
+Nothing is sent anywhere, and nothing goes online.
 
-While it is on:
-
-- **Your location is never asked for.** The place is the first one in GNOME Weather's
-  list, read from GNOME Shell's own weather settings (`org.gnome.shell.weather`). The
-  extension does not use Location Services.
-- **To MET Norway** (`api.met.no`, its Locationforecast service): the latitude and
-  longitude of that place, a town from GWeather's built-in list of cities.
-- **To NOAA's Aviation Weather Center** (`aviationweather.gov`): the four-letter code of
-  that town's airport weather station.
-- **With every request**, GWeather's user agent, which names libgweather, this extension
-  (`io.github.Jackicus.WorkspaceFx`) and this repository's address, as MET Norway's terms
-  ask.
-
-Both are asked every half hour, and straight away when the place changes by more than
-10 km; after a failure, again ten minutes later.
-
-What it keeps, in the extension's settings (dconf, readable by programs running as you):
-
-- While following the weather, the town's name, its coordinates and the last report
-  (conditions, temperature, when it came). Turning Follow the Weather off clears them.
-- Your saved scenes, and the path of a custom picture.
-
-Gradient backgrounds are cached as images in `~/.cache/workspace-fx`.
-
-Workspace titles and the switch animation send nothing anywhere. The titles read and write
-only GNOME's list of workspace names.
-
-Forecasts are from the Norwegian Meteorological Institute (MET Norway), under the
-[NLOD 2.0](https://data.norge.no/nlod/en/2.0) and
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licences; observations are from
-NOAA's Aviation Weather Center.
+- **Time of Day** reads the first place in [GNOME Weather](https://apps.gnome.org/Weather/)'s
+  list, as GNOME Shell keeps it (`org.gnome.shell.weather`), to work out where the sun is,
+  on your machine. Without one it follows the clock. Your location is never asked for.
+- **Workspace titles** read and write only GNOME's list of workspace names.
+- The extension's settings (dconf, readable by programs running as you) keep your saved
+  scenes and the paths of your custom pictures. Gradient backgrounds are cached as images
+  in `~/.cache/workspace-fx`.
 
 ## Install
 
@@ -281,7 +214,7 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
 
 <table>
   <tr>
-    <td align="center" width="50%"><img src="docs/screenshots/scenes.png" alt="The Scenes page: the Weather group with Follow the Weather off, Weather Sets the Sky on and the Place row reading Bergen, from GNOME Weather, then Your Scenes with Save Your Look As…"><br><b>Scenes</b></td>
+    <td align="center" width="50%"><img src="docs/screenshots/scenes.png" alt="The Scenes page: Your Scenes, with Save Your Look As… and one saved scene, Waves, ticked as the look showing now"><br><b>Scenes</b></td>
     <td align="center" width="50%"><img src="docs/screenshots/prefs.png" alt="The Patterns page, scrolled to where the Ambient group ends and the Weather group begins: Sparkles switched on, Embers, Fireflies and Bokeh off, then Clouds, Sunbeams, Lightning, Fog and Snow, each with a description, a switch and an expander"><br><b>Patterns</b></td>
   </tr>
   <tr>
@@ -290,8 +223,7 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
   </tr>
 </table>
 
-- **Scenes**: Follow the Weather and the GNOME Weather place it follows, and your saved
-  scenes.
+- **Scenes**: your saved scenes, and Save Your Look As… to add one.
 - **Patterns**: a switch for each pattern, in Ambient, Weather and React groups; open one
   for its Brightness, Speed and, where it has one, Amount, and a Reset. Under All Patterns: Animation Speed, Pattern Opacity and Span All Monitors.
 - **Background**: what the patterns are drawn over: Desktop Wallpaper, Accent Color, Color
@@ -311,9 +243,6 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
 - **Performance**: the frame rate (every frame, every other frame, or about 60 or 30 a
   second, in step with each display), Pause While Covered (on by default) and Pause on
   Battery Power (off by default).
-
-While the weather is choosing, the Patterns and Background pages are locked, with a
-**Choose My Own** button to stop following it.
 
 ## Troubleshooting
 
@@ -341,11 +270,9 @@ From a clone, `make status` says whether the extension is installed and active, 
 - **After a GNOME update, nothing appears, or the patterns vanish in the overview.** The
   extension reaches into the shell's internals to sit on the wallpaper
   ([docs/private-api.md](docs/private-api.md)); open an issue with the journal output.
-- **"Choose a place in GNOME Weather".** GNOME Weather has no place in its list: open it
-  (the Place row in the preferences does) and choose one. GNOME Shell picks it up while
-  GNOME Weather is running.
-- **"The weather service could not be reached".** It tries again ten minutes later; check
-  the network connection.
+- **Time of Day changes at the wrong time.** Without a place in GNOME Weather it follows
+  fixed hours; choose your town there, and GNOME Shell picks it up while GNOME Weather
+  is running.
 - **No title on a switch.** Only keyboard switches put up the workspace switcher, and a
   workspace without a name shows none. Just Perfection with its workspace popup off, or
   Workspace Matrix, replaces that popup, and the title with it.

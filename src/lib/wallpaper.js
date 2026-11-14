@@ -7,14 +7,13 @@ import { MonitorRenderer, SceneClock, canvasAround } from './engine.js';
 import { SystemState } from './system.js';
 import { OverviewCanvas } from './overview.js';
 import { ShellBackground, pictureOf } from './background.js';
-import { WeatherWatcher } from './weather.js';
 import { Parallax } from './parallax.js';
 import { PointerTrail } from './pointer.js';
 import { Daytime } from './daytime.js';
 import { EFFECTS } from './catalog.js';
 
 const BASE_KEYS = new Set([
-    'background-mode', 'color-palette', 'custom-image', 'daytime-images', 'span-monitors', 'weather', 'weather-background',
+    'background-mode', 'color-palette', 'custom-image', 'daytime-images', 'span-monitors',
 ]);
 
 export class WorkspaceFxWallpaper {
@@ -28,10 +27,8 @@ export class WorkspaceFxWallpaper {
         this._interface = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
         this._desktop = new Gio.Settings({ schema_id: 'org.gnome.desktop.background' });
         this._system = new SystemState(() => this._push(this._state()));
-        this._weather = null;
         this._pointer = null;
         this._daytime = null;
-        this._followWeather();
         this._followPointer();
         this._followDaytime();
 
@@ -49,10 +46,7 @@ export class WorkspaceFxWallpaper {
         Main.layoutManager.connectObject('monitors-changed', () => this._rebuild(), this);
 
         this._settings.connectObject('changed', (_s, key) => {
-            // Written by the weather itself, which says when its look changes.
-            if (key === 'weather-status') return;
-            if (key === 'weather') this._followWeather();
-            if (key === 'enabled-effects' || key === 'weather') this._followPointer();
+            if (key === 'enabled-effects') this._followPointer();
             if (key === 'span-monitors' || key.startsWith('parallax') || key.startsWith('pointer-tilt')) {
                 this._reframe();
                 return;
@@ -89,9 +83,6 @@ export class WorkspaceFxWallpaper {
         this._parallax.destroy();
         this._parallax = null;
 
-        this._weather?.destroy();
-        this._weather = null;
-
         this._pointer?.destroy();
         this._pointer = null;
 
@@ -106,22 +97,6 @@ export class WorkspaceFxWallpaper {
         this._background = null;
 
         this._teardown();
-    }
-
-    _followWeather() {
-        const on = this._settings.get_boolean('weather');
-        if (on && !this._weather) {
-            // Built before the background at enable, so the first base is already the weather's.
-            this._weather = new WeatherWatcher(this._settings, () => {
-                this._baseChanged();
-                this._followPointer();
-                this._push(this._state());
-            });
-        } else if (!on && this._weather) {
-            this._weather.destroy();
-            this._weather = null;
-            this._settings.reset('weather-status');
-        }
     }
 
     _baseChanged() {
@@ -148,7 +123,7 @@ export class WorkspaceFxWallpaper {
 
     // Followed only while a React pattern is on.
     _followPointer() {
-        const ids = this._weather?.look?.['enabled-effects'] ?? this._settings.get_strv('enabled-effects');
+        const ids = this._settings.get_strv('enabled-effects');
         const wanted = EFFECTS.some(e => e.react && ids.includes(e.id));
         if (wanted && !this._pointer) {
             this._pointer = new PointerTrail();
@@ -160,14 +135,11 @@ export class WorkspaceFxWallpaper {
 
     _state() {
         const s = this._settings;
-        // The weather's look stands in for the user's keys, which stay as they are.
-        const look = this._weather?.look ?? null;
-        const sky = look && s.get_boolean('weather-background') ? look : null;
         return {
-            enabledEffects: look?.['enabled-effects'] ?? s.get_strv('enabled-effects'),
-            tuning: look?.['pattern-tuning'] ?? s.get_value('pattern-tuning').deepUnpack(),
-            mode: sky?.['background-mode'] ?? s.get_string('background-mode'),
-            colorPalette: sky?.['color-palette'] ?? s.get_string('color-palette'),
+            enabledEffects: s.get_strv('enabled-effects'),
+            tuning: s.get_value('pattern-tuning').deepUnpack(),
+            mode: s.get_string('background-mode'),
+            colorPalette: s.get_string('color-palette'),
             customImage: s.get_string('custom-image'),
             daytimeImages: s.get_value('daytime-images').deepUnpack(),
             period: this._daytime?.period ?? null,

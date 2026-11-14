@@ -40,11 +40,10 @@ From zsh, run those under `bash -c` (zsh does not split `$N`).
 - **`start --stand-in`** runs a copy of `src/` with a scratch home and fresh settings:
   the `desktop` base is GNOME's default wallpaper and `~/.cache/workspace-fx` is the
   scratch one. For screenshots that are kept.
-- **The weather follows GNOME Weather's place**, which the shell keeps in
-  `org.gnome.shell.weather` `locations`. `./scripts/nested.sh weather-place` writes a
+- **The Time of Day base follows the sun at GNOME Weather's place**, which the shell keeps
+  in `org.gnome.shell.weather` `locations`. `./scripts/nested.sh weather-place` writes a
   stand-in one (Bergen by default; `LATITUDE LONGITUDE` for the nearest GWeather city;
-  `none` to clear) into the nested settings only, never a real location. Under
-  `--stand-in` a GNOME Weather desktop entry that runs nothing lets the Place row open it.
+  `none` to clear) into the nested settings only, never a real location.
 - **`/prefs`** opens the preferences in the nested shell; `make prefs` opens the user's
   own, never used to test.
 - **No shell at all**: `node scripts/shaders.mjs render PATTERN --out $S/x.png
@@ -64,8 +63,7 @@ system-wide, so every `gsettings` call names its directory:
 
 Useful keys: `enabled-effects` (`as` of catalog ids), `background-mode`
 (`desktop`/`accent`/`color`/`image`/`daytime`), `color-palette`, `speed`, `opacity`,
-`target-fps`, `pause-when-covered`, `span-monitors`, `parallax`, `pointer-tilt`,
-`weather`.
+`target-fps`, `pause-when-covered`, `span-monitors`, `parallax`, `pointer-tilt`.
 
 - **Two frames of the same animation are not a comparison.** The patterns move, so a
   before/after pair always differs a little. Judge shape, colour, density and
@@ -131,10 +129,9 @@ $N --schemadir src/schemas set org.gnome.shell.extensions.workspace-fx.switch sc
 
 ## The README's screenshots
 
-JPEGs in `docs/screenshots/`: `deep-space.jpg` at 1600×833, `patterns/*.jpg` and
-`weather/*.jpg` at 960×500, and the preferences as PNGs taken with `window` in the dark
+JPEGs in `docs/screenshots/`: `deep-space.jpg` at 1600×833, `patterns/*.jpg` at 960×500, and the preferences as PNGs taken with `window` in the dark
 scheme (`org.gnome.desktop.interface color-scheme prefer-dark` in the nested settings):
-`scenes.png` the Scenes page with `weather-place` set, `prefs.png` the Patterns page
+`scenes.png` the Scenes page with one saved scene, `prefs.png` the Patterns page
 scrolled six notches (`enabled-effects` `['wave', 'sparkles', 'constellation']`),
 `prefs-titles.png` and `prefs-switching.png` the Titles and Switching pages at their
 defaults. Click the window's title bar first: `window` needs it focused. Each

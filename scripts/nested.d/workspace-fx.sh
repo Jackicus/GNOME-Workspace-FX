@@ -3,18 +3,10 @@
 #   ./scripts/nested.sh weather-place [LATITUDE LONGITUDE | none]
 #                                     set GNOME Weather's place, as the shell keeps it in
 #                                     org.gnome.shell.weather locations, in the nested
-#                                     session's own settings: the GWeather city nearest
-#                                     the point (default 60.39 5.32, Bergen, a stand-in);
-#                                     none clears it
+#                                     session's own settings, for the Time of Day base's
+#                                     sun: the GWeather city nearest the point (default
+#                                     60.39 5.32, Bergen, a stand-in); none clears it
 #
-
-# Under --stand-in, GNOME Weather's desktop entry, so the preferences' Place row can
-# open it as it does where the app is installed. Its Exec does nothing.
-nested_stand_in() {
-    mkdir -p "$1/.local/share/applications"
-    printf '%s\n' '[Desktop Entry]' 'Type=Application' 'Name=Weather' 'Exec=true' \
-        'Icon=org.gnome.Weather' 'NoDisplay=true' > "$1/.local/share/applications/org.gnome.Weather.desktop"
-}
 
 cmd_weather_place() {
     require_running

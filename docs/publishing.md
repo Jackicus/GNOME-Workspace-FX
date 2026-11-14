@@ -42,9 +42,9 @@ prefs.js
 stylesheet.css
 schemas/org.gnome.shell.extensions.workspace-fx.gschema.xml
 lib/app.js  lib/background.js  lib/catalog.js  lib/daytime.js  lib/engine.js
-lib/layer.js  lib/looks.js  lib/overview.js  lib/palettes.js  lib/parallax.js
+lib/layer.js  lib/overview.js  lib/palettes.js  lib/parallax.js
 lib/pointer.js  lib/scenes.js  lib/shader.js  lib/sun.js  lib/system.js
-lib/wallpaper.js  lib/weather.js
+lib/wallpaper.js
 lib/titles.js  lib/title.js  lib/editor.js  lib/names.js  lib/titlesPrefs.js
 lib/switch.js  lib/switchView.js  lib/switchShader.js  lib/switchPrefs.js
 lib/layers/{aurora,bokeh,clouds,constellation,contours,embers,fireflies,fog,
@@ -140,10 +140,7 @@ that could look like a bug. It says:
   remote-desktop sessions;
 - it stays still in power-saver, and optionally on battery;
 - gradients are cached as images in `~/.cache/workspace-fx`;
-- Follow the Weather, off until the user turns it on, is the only thing that
-  uses the network. It follows the first place in the user's GNOME Weather
-  list and never asks for a location itself. Through GWeather it sends that
-  town's coordinates to MET Norway, and its station code to aviationweather.gov.
+- nothing goes to the network.
 
 ## The review guidelines, item by item
 
@@ -161,8 +158,8 @@ before `enable()`. All of it is definitions: the `WorkspaceFxPreviewHost` class,
 D-Bus interfaces from `makeProxyWrapper()` in `system.js`, the catalog and its
 shader strings, an empty `Map` in `shader.js` and in `switchShader.js`, a `Set` of
 key names in `wallpaper.js`, the parts in `app.js`, the switch scenes and their GLSL,
-the indicator places in `titles.js`, a constant `fireflies.js` works out from its own numbers,
-and in `weather.js` the tables from GWeather's enums to plain words. Nothing is instantiated, connected or scheduled.
+the indicator places in `titles.js`, and a constant `fireflies.js` works out from its own
+numbers. Nothing is instantiated, connected or scheduled.
 That is what the guideline allows ("static data structures and instances of
 built-in JavaScript objects"). `WorkspaceFxWallpaper` calls `getSettings()` in its
 constructor, but it is constructed inside `enable()`.
@@ -181,11 +178,9 @@ connections; the overview clones and the slide override (put back
 while it is still the outermost wrap); `Parallax` (its picture load cancelled,
 its panoramas destroyed, the wallpaper and Blur My Shell's actors put back and
 its hook on Blur My Shell's prototype taken back while it is still its own, its
-workspace, cursor and background connections dropped); the `WeatherWatcher`, if the weather is
-on (its timer is removed, its GWeather request aborted, and its GWeather and settings
-connections dropped); the `PointerTrail` and `Daytime`, if they are kept (the
-cursor tracker connection; the timer, the login1 subscription and the weather
-settings connection); `SystemState` (its
+workspace, cursor and background connections dropped); the `PointerTrail` and `Daytime`, if they are kept (the
+cursor tracker connection; the timer, the login1 subscription and the shell's
+weather settings connection); `SystemState` (its
 `Gio.Cancellable` is cancelled and its D-Bus proxies and `St.Settings`
 connection are dropped); the wallpaper
 takeover, including the holder `BackgroundManager` and its container actor; and
@@ -208,15 +203,14 @@ Every connection in the shell uses `connectObject()`/`disconnectObject()` and is
 dropped in the owner's `destroy()`/`disable()`, except the clones' `destroy`
 handlers. The `destroy` handlers on overview clones
 are on the clones themselves. The preferences disconnect their settings handler
-and their handler on the shell's weather settings on `close-request`.
+on `close-request`.
 
 ### Remove main loop sources: meets
 
 There is one source per monitor: `GLib.timeout_add()` in
 `MonitorRenderer._onPaint()`, guarded by `if (this._timerId || ...) return;` on
 the start of the line that books it, and removed in `MonitorRenderer.destroy()`.
-The others are the `WeatherWatcher`'s five-minute `GLib.timeout_add_seconds()`,
-added in its constructor and removed in its `destroy()`, `Daytime`'s one timer to
+The others are `Daytime`'s one timer to
 the next period of the day, removed before each new one and in its `destroy()`,
 and `ShellBackground`'s
 one-shot `GLib.idle_add()` that takes a replaced background source back
@@ -232,9 +226,9 @@ There is no `ByteArray`, `Lang` or `Mainloop`, and no `run_dispose()`.
 The shell side imports Gio, GLib, GObject, GDesktopEnums, Clutter, Cogl, Meta,
 Shell, St, GWeather and cairo, and no Gtk, Gdk or Adw. `prefs.js`
 imports Adw, Gtk, Gio and GLib, plus `lib/catalog.js` (the layers and
-`lib/layer.js`, all pure JS), `lib/palettes.js` (cairo), `lib/scenes.js` (Gio, GLib)
-and `lib/weather.js` (Gio, GLib, GWeather, and the pure `looks.js` and `sun.js`),
-none of which imports Clutter, Meta, St or Shell. Best Practices suggests keeping
+`lib/layer.js`, all pure JS), `lib/palettes.js` (cairo), `lib/scenes.js` (Gio, GLib),
+and `lib/titlesPrefs.js` and `lib/switchPrefs.js` (Adw, Gtk, Gio, and the pure
+`lib/switch/scenes.js`), none of which imports Clutter, Meta, St or Shell. Best Practices suggests keeping
 modules used only by the preferences in a `prefs/` directory. `scenes.js` is such
 a module, so moving it is optional tidying.
 
@@ -265,9 +259,8 @@ answered with an error. The only informational line, `Enabled from ...`, is in
 
 ### Scripts and binaries, clipboard, privileged subprocesses, telemetry: meets
 
-None of these are used. `scripts/` is not in the zip. The only network traffic
-is GWeather's own weather requests while the user has Follow the Weather on,
-which the description discloses (above).
+None of these are used. `scripts/` is not in the zip. There is no network
+traffic.
 
 ### Extensions must be functional: a risk worth knowing
 
@@ -290,7 +283,7 @@ lists the patterns reviewers look for. In this code:
   builds are used directly. What optional chaining is left is on private shell
   paths, where it is how they degrade and [private-api.md](private-api.md)
   explains each; on what is kept only while it is needed and null otherwise (the
-  wallpaper's `_weather`, `_pointer` and `_daytime`, a layer's `state`, a
+  wallpaper's `_pointer` and `_daytime`, a layer's `state`, a
   monitor's tilt, a renderer for a monitor not yet built, an optional part in
   `app.js`, the titles' popup, editor and button, and the callbacks and
   cancellables set after construction); on
@@ -300,8 +293,9 @@ lists the patterns reviewers look for. In this code:
 - **try/catch that only swallows** ("Avoid Unnecessary try-catch Wrappers"):
   gone from the shipped `extension.js`, so a failed load shows as an error in
   the Extensions app. Those that remain handle real failures: rendering a
-  gradient (disk I/O), a saved weather report that will not parse, a picture
-  file parallax cannot read, and a dismissed file chooser in the preferences.
+  gradient (disk I/O), a picture file parallax cannot read, a switch animation
+  that falls back to the shell's slide, and a dismissed file chooser in the
+  preferences.
 - **A lifecycle flag** ("Lifecycle and Destruction State"): `this._enabling`
   exists only in `scripts/dev-extension.js`, whose `enable()` is async. The
   shipped entry point has none.

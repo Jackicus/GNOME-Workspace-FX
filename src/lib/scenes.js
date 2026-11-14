@@ -35,12 +35,10 @@ export function applyScene(settings, scene) {
         if (scene.values[key]) batch.set_value(key, scene.values[key]);
         else if (!PICTURES.has(key)) batch.reset(key);
     }
-    batch.set_boolean('weather', false);
     batch.apply();
 }
 
 export function isCurrent(settings, scene) {
-    if (settings.get_boolean('weather')) return false;
     return SCENE_KEYS.every(key => {
         const want = scene.values[key];
         if (PICTURES.has(key) && !want) return true;
