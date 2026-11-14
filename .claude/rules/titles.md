@@ -1,16 +1,21 @@
 ---
 paths:
-  - "src/lib/titles/**"
+  - "src/lib/titles.js"
+  - "src/lib/title.js"
+  - "src/lib/editor.js"
+  - "src/lib/names.js"
+  - "src/lib/titlesPrefs.js"
   - "src/stylesheet.css"
 ---
 
 # Titles
 
-`WorkspaceFxTitles` (`src/lib/titles/titles.js`): the name of a workspace, in large
+`WorkspaceFxTitles` (`src/lib/titles.js`): the name of a workspace, in large
 type, shown with the shell's workspace switcher popup (the dots) when it is switched to,
 and edited in place to name the current one. `title.js` is one monitor's title inside the
 popup, `names.js` keeps GNOME's `workspace-names` with their workspaces, `editor.js` is
-the title as an entry with clear and confirm buttons, and `prefs.js` is the Titles page.
+the title as an entry with clear and confirm buttons, and `titlesPrefs.js` is the Titles
+page.
 
 ## How it fits together
 

@@ -11,8 +11,8 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { RUN, SCENES } from './scenes.js';
-import { WorkspaceFxSwitchView } from './view.js';
+import { RUN, SCENES } from './switch/scenes.js';
+import { WorkspaceFxSwitchView } from './switchView.js';
 
 const BACKWARD = [
     Meta.MotionDirection.UP,

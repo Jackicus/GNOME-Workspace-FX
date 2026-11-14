@@ -38,8 +38,8 @@ because `src/` is changing; functions are named instead.
 | `class extends Clutter.ShaderEffect`, `vfunc_get_static_snippet()` | shader.js | `enable()` throws and the extension shows as errored with the base taken over (below) | No |
 | `vfunc_paint_target(node, paintContext)`, `this.get_pipeline()` | shader.js | Patterns freeze on their first frame, or draw with no uniforms | No |
 | `Cogl.Pipeline.set_uniform_float()` from GJS | shader.js | Every pattern draws as at time 0 with a zero canvas | No |
-| `Main.wm._workspaceAnimation.animateSwitch` (replaced on the instance) | switch/switch.js | Switches show the shell's slide | Yes, logs a warning when the controller is gone |
-| `controller._prepareWorkspaceSwitch()`, `._switchData` (`.monitors`, `.inProgress`), `._finishWorkspaceSwitch()`, `._swipeTracker.enabled`, `monitorGroup._workspaceGroups` | switch/switch.js | The half-made switch is finished and the shell's slide runs instead | Yes, logs an error |
+| `Main.wm._workspaceAnimation.animateSwitch` (replaced on the instance) | switch.js | Switches show the shell's slide | Yes, logs a warning when the controller is gone |
+| `controller._prepareWorkspaceSwitch()`, `._switchData` (`.monitors`, `.inProgress`), `._finishWorkspaceSwitch()`, `._swipeTracker.enabled`, `monitorGroup._workspaceGroups` | switch.js | The half-made switch is finished and the shell's slide runs instead | Yes, logs an error |
 
 "Silently" means it degrades without a line in the journal, so the symptom is
 the only sign.
@@ -614,7 +614,7 @@ the nested shell) and is never whole again.
 **If it changes.** Optional-chained: the tilt then follows the pointer during a
 slide too, moving the slide's wallpaper with it.
 
-## The switch animation (switch/switch.js)
+## The switch animation (switch.js)
 
 Checked on 2026-10-28 against the `51.1` tags of `GNOME/gnome-shell` and `GNOME/mutter`.
 `js/ui/workspaceAnimation.js` is the same in 50.5 and 51.1, and `windowManager.js` still
@@ -744,7 +744,11 @@ gjs 1.88 and 1.90 then name a class `Gjs_<module's directory>_<module>_<class na
 `Gjs_lib_shader_WorkspaceFx_aurora` and `Gjs_lib_overview_WorkspaceFxPreviewHost`;
 staged for development, `Gjs_lib-<checksum>_shader_WorkspaceFx_aurora`. The 19
 pattern classes come from one definition in `buildEffectClass()`, so each is given
-its JS name, with the extension's prefix, before it is registered.
+its JS name, with the extension's prefix, before it is registered. Only `lib/`'s
+own name changes from stage to stage, so every module that registers a class sits
+directly in `lib/`: one in a subdirectory would be named `Gjs_<subdirectory>_…` on
+every stage and throw "already registered" at the first enable after an edit. The
+subdirectories (`layers/`, `switch/`) hold plain modules only.
 
 - **Installed from the zip** the module is evaluated once per shell process
   (GJS caches modules by URL), so each pattern's class is registered once, the

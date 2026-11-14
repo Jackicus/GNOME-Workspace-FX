@@ -1,5 +1,5 @@
-import { WorkspaceFxSwitch } from './switch/switch.js';
-import { WorkspaceFxTitles } from './titles/titles.js';
+import { WorkspaceFxSwitch } from './switch.js';
+import { WorkspaceFxTitles } from './titles.js';
 import { WorkspaceFxWallpaper } from './wallpaper.js';
 
 // Each in a child schema of its own, switched on and off by its `enabled` key.
