@@ -111,10 +111,9 @@ export class WorkspaceFxWallpaper {
     _followWeather() {
         const on = this._settings.get_boolean('weather');
         if (on && !this._weather) {
-            // Built before the background at enable, so the first base is
-            // already the weather's; hence the test below.
+            // Built before the background at enable, so the first base is already the weather's.
             this._weather = new WeatherWatcher(this._settings, () => {
-                if (this._background) this._baseChanged();
+                this._baseChanged();
                 this._followPointer();
                 this._push(this._state());
             });

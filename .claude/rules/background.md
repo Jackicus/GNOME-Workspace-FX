@@ -21,9 +21,10 @@ new one goes there in the same pull request.
   the chosen picture. The base then appears wherever a wallpaper appears, including the
   copies other extensions blur, and the shell crossfades it when it changes.
 - **Reached through private fields**: a `BackgroundSource`'s `_settings` and
-  `_backgrounds`, and `Background`'s `_emitChangedSignal`. `background.js` checks for
-  them and says so in the log if they are gone; the patterns still draw, over the
-  user's own wallpaper.
+  `_backgrounds`, and `Background`'s `_emitChangedSignal`. A missing source or
+  `_settings` is logged, and the patterns still draw over the user's own wallpaper; a
+  missing `_backgrounds` or `_emitChangedSignal` is silent, and a new base appears only
+  at the shell's next wallpaper reload.
 - **Every write to those settings makes the shell rebuild and crossfade every
   wallpaper**, and so does touching the file it shows: hence `update()` leaving an
   unchanged base alone, and no mtime games in the palette cache.

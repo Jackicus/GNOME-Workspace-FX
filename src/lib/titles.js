@@ -30,8 +30,8 @@ const INDICATOR_PLACES = {
 
 const WorkspaceFxRenameButton = GObject.registerClass(
 class WorkspaceFxRenameButton extends PanelMenu.Button {
-    _init(name, onActivate) {
-        super._init(0.5, name, true);
+    _init(onActivate) {
+        super._init(0.5, 'Rename Workspace', true);
         this.accessible_role = Atk.Role.PUSH_BUTTON;
         this.add_child(new St.Icon({
             icon_name: 'document-edit-symbolic',
@@ -187,7 +187,7 @@ export class WorkspaceFxTitles {
     _syncIndicator() {
         const show = this._settings.get_boolean('show-indicator');
         if (show && !this._indicator) {
-            this._indicator = new WorkspaceFxRenameButton(this._extension.metadata.name, () => this._rename());
+            this._indicator = new WorkspaceFxRenameButton(() => this._rename());
             const [box, index] = INDICATOR_PLACES[this._settings.get_string('indicator-position')];
             Main.panel.addToStatusArea(this._extension.uuid, this._indicator, index, box);
         } else if (!show && this._indicator) {
