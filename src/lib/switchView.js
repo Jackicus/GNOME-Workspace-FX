@@ -2,8 +2,8 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
-import { HALF, cameraAt, speedAt } from './scenes.js';
-import { effectClass } from './shader.js';
+import { HALF, cameraAt, speedAt } from './switch/scenes.js';
+import { effectClass } from './switchShader.js';
 
 // Where the impact frame falls, as progress through the switch.
 const IMPACT_AT = 0.86;

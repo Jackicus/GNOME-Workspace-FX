@@ -2,7 +2,7 @@ import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 
-import { shaderSource } from './scenes.js';
+import { shaderSource } from './switch/scenes.js';
 
 // Kept across disable and enable: a GType cannot be unregistered, and a class builds
 // its snippet once.

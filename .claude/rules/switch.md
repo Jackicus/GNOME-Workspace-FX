@@ -1,19 +1,24 @@
 ---
 paths:
+  - "src/lib/switch.js"
+  - "src/lib/switchView.js"
+  - "src/lib/switchShader.js"
+  - "src/lib/switchPrefs.js"
   - "src/lib/switch/**"
 ---
 
 # The switch animation
 
-`WorkspaceFxSwitch` (`src/lib/switch/switch.js`) turns a workspace switch into a camera
+`WorkspaceFxSwitch` (`src/lib/switch.js`) turns a workspace switch into a camera
 move through a cel-shaded scene: the current workspace pulls back into the scene, the
 camera races through it, and the new workspace zooms in until it fills the screen.
-`view.js` is one monitor's switch (`WorkspaceFxSwitchView`: the shader backdrop and two
-cards), `shader.js` a `Clutter.ShaderEffect` class per scene (JS name
-`WorkspaceFxSwitch_<id>`, kept across disable and enable), `scenes.js` the catalogue, the
-shared GLSL and the camera path (pure: the preferences and `scripts/shaders.mjs` import
-it), one module per scene (`corridor.js`, `shaft.js`, `warp.js`, `sky.js`), and
-`prefs.js` the Switching page.
+`switchView.js` is one monitor's switch (`WorkspaceFxSwitchView`: the shader backdrop and
+two cards), `switchShader.js` a `Clutter.ShaderEffect` class per scene (JS name
+`WorkspaceFxSwitch_<id>`, kept across disable and enable), and `switchPrefs.js` the
+Switching page. The pure part is in `lib/switch/`, as the patterns are in `lib/layers/`:
+`scenes.js`, the catalogue, the shared GLSL and the camera path (the preferences and
+`scripts/shaders.mjs` import it), and one module per scene (`corridor.js`, `shaft.js`,
+`warp.js`, `sky.js`).
 
 ## How a switch runs
 

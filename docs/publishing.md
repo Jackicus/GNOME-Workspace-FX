@@ -45,11 +45,12 @@ lib/app.js  lib/background.js  lib/catalog.js  lib/daytime.js  lib/engine.js
 lib/layer.js  lib/looks.js  lib/overview.js  lib/palettes.js  lib/parallax.js
 lib/pointer.js  lib/scenes.js  lib/shader.js  lib/sun.js  lib/system.js
 lib/wallpaper.js  lib/weather.js
+lib/titles.js  lib/title.js  lib/editor.js  lib/names.js  lib/titlesPrefs.js
+lib/switch.js  lib/switchView.js  lib/switchShader.js  lib/switchPrefs.js
 lib/layers/{aurora,bokeh,clouds,constellation,contours,embers,fireflies,fog,
             lightning,nebula,rain,ripples,snow,sparkles,stardust,starfield,
             sunbeams,swarm,wave}.js
-lib/titles/{editor,names,prefs,title,titles}.js
-lib/switch/{corridor,prefs,scenes,shader,shaft,sky,switch,view,warp}.js
+lib/switch/{corridor,scenes,shaft,sky,warp}.js
 ```
 
 What it leaves out: `src/schemas/gschemas.compiled` (a local artefact of
@@ -158,9 +159,9 @@ and the schema). No blocker was found any time.
 the module scope of everything under `lib/` runs when the extension is loaded,
 before `enable()`. All of it is definitions: the `WorkspaceFxPreviewHost` class, the
 D-Bus interfaces from `makeProxyWrapper()` in `system.js`, the catalog and its
-shader strings, an empty `Map` in each `shader.js`, a `Set` of
+shader strings, an empty `Map` in `shader.js` and in `switchShader.js`, a `Set` of
 key names in `wallpaper.js`, the parts in `app.js`, the switch scenes and their GLSL,
-the indicator places in `titles/titles.js`, a constant `fireflies.js` works out from its own numbers,
+the indicator places in `titles.js`, a constant `fireflies.js` works out from its own numbers,
 and in `weather.js` the tables from GWeather's enums to plain words. Nothing is instantiated, connected or scheduled.
 That is what the guideline allows ("static data structures and instances of
 built-in JavaScript objects"). `WorkspaceFxWallpaper` calls `getSettings()` in its

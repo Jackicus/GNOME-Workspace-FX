@@ -52,7 +52,7 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   Under the link, an unlock with no edit between reuses the same stage, and so the
   compiled shaders, as an install does.
 - `lib/app.js`: `WorkspaceFxApp`, the three parts: the wallpaper always, titles
-  (`lib/titles/`) and the switch animation (`lib/switch/`) each while the `enabled` key
+  (`lib/titles.js`) and the switch animation (`lib/switch.js`) each while the `enabled` key
   of its child schema is on, enabled and disabled live as it changes.
 - `lib/wallpaper.js`: `WorkspaceFxWallpaper`, reads settings, works out what each monitor draws (its own canvas, or
   its part of one spanning all of them), builds one `MonitorRenderer` per monitor into
@@ -99,8 +99,8 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   for what layers work out on the CPU, and the helpers they generate GLSL with (`num`,
   `vec3`, `slots`).
 - `prefs.js`, `schemas/`: the settings dialog (Scenes, with the weather and the user's
-  own; Patterns; Background; Titles and Switching, from `lib/titles/prefs.js` and
-  `lib/switch/prefs.js`; Performance) and the keys behind it. The wallpaper's keys are
+  own; Patterns; Background; Titles and Switching, from `lib/titlesPrefs.js` and
+  `lib/switchPrefs.js`; Performance) and the keys behind it. The wallpaper's keys are
   `org.gnome.shell.extensions.workspace-fx`; the titles' and the switch animation's are
   its `.titles` and `.switch` child schemas, at `titles/` and `switch/` under its path,
   each read through its own `Gio.Settings`, so the wallpaper's `changed` handler never

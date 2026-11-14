@@ -301,7 +301,7 @@ should open the file chooser, and you should be able to save and delete a scene.
   51, and the wrapper it returns must be called with `new` (gjs.guide, 51 port
   page). `system.js` already does (`new Proxy(...)` in `_watch()`).
 
-### The titles (titles/)
+### The titles (titles.js, title.js, editor.js, names.js)
 
 Read at `50.5` and `51.1` on 2026-10-28, and booted on 51.1 as Workspace Titles.
 
@@ -326,7 +326,7 @@ Read at `50.5` and `51.1` on 2026-10-28, and booted on 51.1 as Workspace Titles.
   over the overview, an insert with dynamic workspaces, the preferences, and `stop` +
   `start`.
 
-### The switch animation (switch/)
+### The switch animation (switch.js, switchView.js, switchShader.js)
 
 Read 2026-10-28 at gnome-shell 51.1: `ui/workspaceAnimation.js` is the same as at 50.5,
 and every reach in [private-api.md](private-api.md) is there. `Shell.GLSLEffect` is gone

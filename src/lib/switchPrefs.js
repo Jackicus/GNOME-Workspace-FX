@@ -1,8 +1,8 @@
 import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 
-import { comboRow } from '../titles/prefs.js';
-import { SCENES } from './scenes.js';
+import { comboRow } from './titlesPrefs.js';
+import { SCENES } from './switch/scenes.js';
 
 // The Switching page. Its own process's code: Gtk and Adw only.
 export function switchPage(settings) {

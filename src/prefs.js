@@ -6,8 +6,8 @@ import Gio from 'gi://Gio';
 import GioUnix from 'gi://GioUnix';
 
 import { EFFECTS } from './lib/catalog.js';
-import { switchPage } from './lib/switch/prefs.js';
-import { titlesPage } from './lib/titles/prefs.js';
+import { switchPage } from './lib/switchPrefs.js';
+import { titlesPage } from './lib/titlesPrefs.js';
 import { PALETTES } from './lib/palettes.js';
 import { SCENE_KEYS, applyScene, deleteScene, isCurrent, saveScene, savedScenes } from './lib/scenes.js';
 import { weatherPlace } from './lib/weather.js';
