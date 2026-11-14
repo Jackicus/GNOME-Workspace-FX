@@ -183,6 +183,6 @@ function buildEffectClass(effect) {
     };
     // GJS names the GType after this module's path and the class name, so a staged
     // copy of lib/ registers new names on each load.
-    Object.defineProperty(Effect, 'name', { value: `WallpaperFx_${effect.id}` });
+    Object.defineProperty(Effect, 'name', { value: `WorkspaceFx_${effect.id}` });
     return GObject.registerClass(Effect);
 }

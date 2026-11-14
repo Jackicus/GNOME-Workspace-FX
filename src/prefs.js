@@ -6,6 +6,8 @@ import Gio from 'gi://Gio';
 import GioUnix from 'gi://GioUnix';
 
 import { EFFECTS } from './lib/catalog.js';
+import { switchPage } from './lib/switch/prefs.js';
+import { titlesPage } from './lib/titles/prefs.js';
 import { PALETTES } from './lib/palettes.js';
 import { SCENE_KEYS, applyScene, deleteScene, isCurrent, saveScene, savedScenes } from './lib/scenes.js';
 import { weatherPlace } from './lib/weather.js';
@@ -49,7 +51,7 @@ function weatherStatus(settings) {
     }
 }
 
-export default class WallpaperFxPreferences extends ExtensionPreferences {
+export default class WorkspaceFxPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
         window.set_default_size(640, 700);
@@ -73,6 +75,9 @@ export default class WallpaperFxPreferences extends ExtensionPreferences {
         window.add(this._scenesPage(ui));
         window.add(this._patternsPage(ui));
         window.add(this._backgroundPage(ui));
+        const schema = this.metadata['settings-schema'];
+        window.add(titlesPage(window, this.getSettings(`${schema}.titles`)));
+        window.add(switchPage(this.getSettings(`${schema}.switch`)));
         window.add(this._performancePage(ui));
     }
 

@@ -29,7 +29,7 @@ export class ShellBackground {
         this._applied = null;
         this._retakeId = 0;
 
-        this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'wallpaper-fx']);
+        this._cacheDir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'workspace-fx']);
     }
 
     update(state) {
@@ -136,7 +136,7 @@ export class ShellBackground {
                 surface.writeToPNG(path);
                 surface.finish();
             } catch (e) {
-                console.error(`[WallpaperFx] Could not render a gradient: ${e}`);
+                console.error(`[WorkspaceFx] Could not render a gradient: ${e}`);
                 return null;
             }
         }
@@ -156,7 +156,7 @@ export class ShellBackground {
         }
         const source = this._holder._backgroundSource;
         if (!source?._settings) {
-            console.warn('[WallpaperFx] No background source to take over; the base will not change');
+            console.warn('[WorkspaceFx] No background source to take over; the base will not change');
             return;
         }
 

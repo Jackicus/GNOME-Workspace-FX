@@ -2,7 +2,8 @@
 // rather than a pattern that silently draws nothing.
 //
 //   node scripts/shaders.mjs check [PATTERNS]         compile each with glslangValidator, in
-//                                                     the GLSL dialects Cogl may hand it to
+//                                                     the GLSL dialects Cogl may hand it to;
+//                                                     with no PATTERNS, the switch scenes too
 //   node scripts/shaders.mjs bench [WxH] [PATTERNS]   GPU milliseconds per frame for each
 //   node scripts/shaders.mjs render PATTERN [OPTIONS] draw frames of one to a PNG
 //
@@ -31,7 +32,7 @@ import { execFileSync } from 'child_process';
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const lib = path.join(here, '..', 'src', 'lib');
-const work = fs.mkdtempSync(path.join(os.tmpdir(), 'wallpaper-fx-shaders-'));
+const work = fs.mkdtempSync(path.join(os.tmpdir(), 'workspace-fx-shaders-'));
 
 // shader.js wraps the GLSL in GObject classes the shell provides. Only its pure
 // half is wanted here, so the gi imports become a stand-in that absorbs any use.
@@ -72,8 +73,8 @@ const DIALECTS = {
     'GLSL ES 1.00': ['#version 100\nprecision highp float;', 'varying vec4 cogl_color_in;\nvarying vec4 cogl_tex_coord_in[1];', '#define cogl_color_out gl_FragColor'],
 };
 
-function fragment(effect, [version, inputs, output]) {
-    const { declarations, code } = shaderSource(effect);
+function fragment(effect, [version, inputs, output], source = shaderSource) {
+    const { declarations, code } = source(effect);
     const file = path.join(work, `${effect.id}.frag`);
     fs.writeFileSync(file, `${version}\n${inputs}\n${output}\n${declarations}\nvoid main() {\n${code}\n}\n`);
     return file;
@@ -132,16 +133,21 @@ function harness() {
 
 async function check() {
     let failures = 0;
-    for (const effect of await patterns(args[0])) {
+    const shaders = (await patterns(args[0])).map(effect => [effect, shaderSource]);
+    if (!args[0]) {
+        const scenes = await import(path.join(lib, 'switch', 'scenes.js'));
+        shaders.push(...scenes.SCENES.map(scene => [{ ...scene, id: `switch-${scene.id}` }, scenes.shaderSource]));
+    }
+    for (const [effect, source] of shaders) {
         const errors = [];
         for (const [name, dialect] of Object.entries(DIALECTS)) {
             try {
-                execFileSync('glslangValidator', [fragment(effect, dialect)], { stdio: 'pipe' });
+                execFileSync('glslangValidator', [fragment(effect, dialect, source)], { stdio: 'pipe' });
             } catch (e) {
                 errors.push(`${name}:\n${e.stdout || e.message}`);
             }
         }
-        console.log(`${effect.id.padEnd(14)} ${errors.length ? `FAILED\n${errors.join('\n')}` : 'ok'}`);
+        console.log(`${effect.id.padEnd(16)} ${errors.length ? `FAILED\n${errors.join('\n')}` : 'ok'}`);
         failures += errors.length;
     }
     return failures ? 1 : 0;

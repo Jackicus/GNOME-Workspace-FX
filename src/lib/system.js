@@ -52,7 +52,7 @@ export class SystemState {
         new Proxy(Gio.DBus.system, name, path, (proxy, error) => {
             if (error) {
                 if (!error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                    console.warn(`[WallpaperFx] ${name} unavailable: ${error.message}`);
+                    console.warn(`[WorkspaceFx] ${name} unavailable: ${error.message}`);
                 return;
             }
             this._proxies.push(proxy);

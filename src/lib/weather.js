@@ -8,8 +8,8 @@ import { weatherLook } from './looks.js';
 import { phaseOfDay } from './sun.js';
 
 // MET Norway's terms ask every client to name itself.
-const APPLICATION_ID = 'io.github.Jackicus.WallpaperFx';
-const CONTACT = 'https://github.com/Jackicus/GNOME-Wallpaper-FX';
+const APPLICATION_ID = 'io.github.Jackicus.WorkspaceFx';
+const CONTACT = 'https://github.com/Jackicus/GNOME-Workspace-FX';
 
 const TICK_S = 5 * 60;          // how often the time of day is looked at
 const REFRESH_S = 30 * 60;      // how old a report gets before it is asked again

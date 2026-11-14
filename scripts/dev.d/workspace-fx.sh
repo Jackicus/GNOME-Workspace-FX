@@ -1,4 +1,4 @@
-# Wallpaper FX's own dev.sh commands, sourced by the kit's scripts/dev.sh.
+# Workspace FX's own dev.sh commands, sourced by the kit's scripts/dev.sh.
 #
 #   ./scripts/dev.sh shaders    compile every pattern's shader with glslangValidator in
 #                               each GLSL dialect Cogl may hand it to (part of 'check')

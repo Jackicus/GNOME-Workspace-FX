@@ -30,7 +30,7 @@ This runs `./scripts/dev.sh pack` (the kit's, shared by every extension), which:
 4. checks that the zip holds exactly what was copied, and nothing else. A
    missing module or a stray file stops the build with the file named; an editor
    backup or a note in `src/lib` is never copied in the first place;
-5. prints the listing. The output is `dist/wallpaper-fx@jackicus.shell-extension.zip`.
+5. prints the listing. The output is `dist/workspace-fx@jackicus.shell-extension.zip`.
 
 What it contains today:
 
@@ -39,13 +39,17 @@ LICENSE
 metadata.json
 extension.js
 prefs.js
-schemas/org.gnome.shell.extensions.wallpaper-fx.gschema.xml
+stylesheet.css
+schemas/org.gnome.shell.extensions.workspace-fx.gschema.xml
 lib/app.js  lib/background.js  lib/catalog.js  lib/daytime.js  lib/engine.js
 lib/layer.js  lib/looks.js  lib/overview.js  lib/palettes.js  lib/parallax.js
-lib/pointer.js  lib/scenes.js  lib/shader.js  lib/sun.js  lib/system.js  lib/weather.js
+lib/pointer.js  lib/scenes.js  lib/shader.js  lib/sun.js  lib/system.js
+lib/wallpaper.js  lib/weather.js
 lib/layers/{aurora,bokeh,clouds,constellation,contours,embers,fireflies,fog,
             lightning,nebula,rain,ripples,snow,sparkles,stardust,starfield,
             sunbeams,swarm,wave}.js
+lib/titles/{editor,names,prefs,title,titles}.js
+lib/switch/{corridor,prefs,scenes,shader,shaft,sky,switch,view,warp}.js
 ```
 
 What it leaves out: `src/schemas/gschemas.compiled` (a local artefact of
@@ -81,7 +85,7 @@ GNOME 51 compiles it on install, so the zip carries no compiled schema.
 ```sh
 make uninstall
 make zip
-gnome-extensions install dist/wallpaper-fx@jackicus.shell-extension.zip
+gnome-extensions install dist/workspace-fx@jackicus.shell-extension.zip
 # log out and back in, then enable it
 ```
 
@@ -96,11 +100,11 @@ the link afterwards. This is also the only way to run the shipped
 
 | Key | Now | Verdict |
 |---|---|---|
-| `uuid` | `wallpaper-fx@jackicus` | Valid characters and not `gnome.org`. It is the extension's identity on EGO and cannot change after the first upload |
-| `name` | `Wallpaper FX` | See [the name](#copyrights-and-trademarks-meets) |
+| `uuid` | `workspace-fx@jackicus` | Valid characters and not `gnome.org`. It is the extension's identity on EGO and cannot change after the first upload |
+| `name` | `Workspace FX` | See [the name](#copyrights-and-trademarks-meets) |
 | `description` | two paragraphs | Covers the points below |
 | `shell-version` | 51 | The one version that has been run, and the one the code is written for |
-| `settings-schema` | set | Correct; `getSettings()` is called without arguments, which is what Best Practices asks |
+| `settings-schema` | set | Correct; the wallpaper's `getSettings()` is called without arguments, which is what Best Practices asks. The titles' and the switch animation's child schemas are `getSettings()` of that id plus `.titles` and `.switch`, read from `metadata['settings-schema']`, so no schema id is written in the code |
 | `url` | GitHub repo | Correct |
 | `version` | absent | Correct: "This field SHOULD NOT be set by extension developers" ([Anatomy](https://gjs.guide/extensions/overview/anatomy.html)); EGO assigns it |
 | `version-name` | `1.2` | Bump with each upload |
@@ -127,11 +131,14 @@ that could look like a bug. It says:
 - in the Accent, Color and Custom Picture modes it replaces the wallpaper
   the shell shows (the desktop, the overview, and extensions that blur it)
   without changing the user's wallpaper setting;
+- it has three parts, each of which can be turned off: the wallpaper's patterns,
+  workspace titles (Super+F2 and a pencil in the top bar) and the switch animation;
+- workspace names are GNOME's own, so other workspace tools show them;
 - it stays still when animations are off or reduced motion is on. GNOME also
   turns animations off in virtual machines without 3D acceleration and during
   remote-desktop sessions;
 - it stays still in power-saver, and optionally on battery;
-- gradients are cached as images in `~/.cache/wallpaper-fx`;
+- gradients are cached as images in `~/.cache/workspace-fx`;
 - Follow the Weather, off until the user turns it on, is the only thing that
   uses the network. It follows the first place in the user's GNOME Weather
   list and never asks for a location itself. Through GWeather it sends that
@@ -149,13 +156,14 @@ and the schema). No blocker was found any time.
 
 `src/extension.js` has no constructor and imports `./lib/app.js` statically, so
 the module scope of everything under `lib/` runs when the extension is loaded,
-before `enable()`. All of it is definitions: the `WallpaperFxPreviewHost` class, the
+before `enable()`. All of it is definitions: the `WorkspaceFxPreviewHost` class, the
 D-Bus interfaces from `makeProxyWrapper()` in `system.js`, the catalog and its
-shader strings, an empty `Map` in `shader.js`, a `Set` of
-key names in `app.js`, a constant `fireflies.js` works out from its own numbers,
+shader strings, an empty `Map` in each `shader.js`, a `Set` of
+key names in `wallpaper.js`, the parts in `app.js`, the switch scenes and their GLSL,
+the indicator places in `titles/titles.js`, a constant `fireflies.js` works out from its own numbers,
 and in `weather.js` the tables from GWeather's enums to plain words. Nothing is instantiated, connected or scheduled.
 That is what the guideline allows ("static data structures and instances of
-built-in JavaScript objects"). `WallpaperFxApp` calls `getSettings()` in its
+built-in JavaScript objects"). `WorkspaceFxWallpaper` calls `getSettings()` in its
 constructor, but it is constructed inside `enable()`.
 
 ### Destroy all objects: meets
@@ -272,7 +280,7 @@ lists the patterns reviewers look for. In this code:
   remain: `error.matches()`, `peek_stage_views()` and the parts `enable()`
   builds are used directly. What optional chaining is left is on private shell
   paths, where it is how they degrade and [private-api.md](private-api.md)
-  explains each; on `WallpaperFxApp._weather`, which is null while unused; on
+  explains each; on `WorkspaceFxWallpaper._weather`, which is null while unused; on
   the place GNOME Weather's settings deserialize to, which may be none; and on
   `workspace.metaWorkspace?.index()` in `overview.js`, where `metaWorkspace` is
   null for a monitor's extra workspace view.
@@ -303,8 +311,8 @@ operate correctly", and it is not.
 
 ### GSettings schemas: meets
 
-The ID `org.gnome.shell.extensions.wallpaper-fx` and the path
-`/org/gnome/shell/extensions/wallpaper-fx/` use the required bases, the file
+The ID `org.gnome.shell.extensions.workspace-fx` and the path
+`/org/gnome/shell/extensions/workspace-fx/` use the required bases, the file
 is named `<schema-id>.gschema.xml`, the XML is in the zip, and no compiled schema
 ships.
 
@@ -321,7 +329,7 @@ carries its upstream copyright and permission notice where it is used, as MIT as
 ### Copyrights and trademarks: meets
 
 Nothing that ships names another product or reuses trademarked branding: the
-name "Wallpaper FX" does not collide with an existing product in this field, and
+name "Workspace FX" does not collide with an existing product in this field, and
 the Wave pattern is described by what it draws, not by the console menu it
 resembles.
 
@@ -355,7 +363,7 @@ URL each time. That staging lives outside what ships:
   try/catch:
   ```js
   enable() {
-      this._app = new WallpaperFxApp(this);
+      this._app = new WorkspaceFxApp(this);
       this._app.enable();
   }
 
@@ -366,7 +374,7 @@ URL each time. That staging lives outside what ships:
   ```
 - `scripts/dev-extension.js` is the development entry point (the kit's): an
   async `enable()` that copies `lib/` to
-  `$XDG_RUNTIME_DIR/wallpaper-fx/shell-<pid>/lib-<checksum>/`, a directory of the
+  `$XDG_RUNTIME_DIR/workspace-fx/shell-<pid>/lib-<checksum>/`, a directory of the
   running shell's own named for a checksum of the files, and imports `app.js`
   from there, with the `_enabling` guard and the logging that belong to it.
 - `./scripts/dev.sh link` (`link_tree()`) builds the extension directory as a real
@@ -395,10 +403,10 @@ that could drift, so packing does not do that.
 ## Uploading
 
 - **Web:** log in at https://extensions.gnome.org/upload/, choose
-  `dist/wallpaper-fx@jackicus.shell-extension.zip`, and accept the terms.
+  `dist/workspace-fx@jackicus.shell-extension.zip`, and accept the terms.
 - **Command line** (gnome-extensions 49 and later; gjs.guide,
   [Port Extensions to GNOME Shell 49](https://gjs.guide/extensions/upgrading/gnome-shell-49.html)):
-  `gnome-extensions upload --accept-tos dist/wallpaper-fx@jackicus.shell-extension.zip`.
+  `gnome-extensions upload --accept-tos dist/workspace-fx@jackicus.shell-extension.zip`.
   It prompts for the EGO username and password. `--user`, `--password` and
   `--password-file` exist for CI; gjs.guide warns that a password in a command
   line can end up in logs, the environment or the filesystem.

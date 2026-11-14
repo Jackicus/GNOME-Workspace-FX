@@ -1,5 +1,5 @@
 ---
-description: Show Wallpaper FX running in a nested shell, mirrored live on the desktop, and describe what it looks like
+description: Show Workspace FX running in a nested shell, mirrored live on the desktop, and describe what it looks like
 argument-hint: "[optional: what to show, e.g. 'aurora over the dusk palette']"
 allowed-tools: Bash(./scripts/nested.sh:*), Bash(make nested:*), Read
 ---
@@ -16,7 +16,7 @@ Requested: $ARGUMENTS
    an earlier run.
 2. If the request names particular patterns, a palette or a mode, set them with
    `./scripts/nested.sh run timeout 5 gsettings --schemadir src/schemas set
-   org.gnome.shell.extensions.wallpaper-fx …` — the running extension repaints on the
+   org.gnome.shell.extensions.workspace-fx …` — the running extension repaints on the
    key change. Through `run` these are the nested shell's own settings; the same
    command without `./scripts/nested.sh run` writes the user's real settings,
    which a preview never does.

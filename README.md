@@ -1,8 +1,13 @@
-# Wallpaper FX
+# Workspace FX
 
-Animated wallpapers drawn by your GPU: aurora, nebulae, starfields, snow, rain and more.
-Nineteen patterns you can stack and tune, or let the weather outside choose, painted on the
-GNOME desktop behind your windows and in the overview.
+Your GNOME desktop and workspaces, animated. Animated wallpapers drawn by your GPU: aurora,
+nebulae, starfields, snow, rain and more, nineteen patterns you can stack and tune, or let
+the weather outside choose, painted behind your windows and in the overview. Names for your
+workspaces, shown in large type as you switch to one. And workspace switches as a camera
+move through a scene.
+
+It was Wallpaper FX; Workspace Titles and Workspace Scenes are now part of it. Each of the
+three can be turned off on its own.
 
 ![A dark violet and blue nebula filled with small stars, a few of them joined by faint lines, and a meteor streaking across the upper right](docs/screenshots/deep-space.jpg)
 <sub>Nebula, Starfield and Constellation together, with a meteor on its way through.</sub>
@@ -21,6 +26,10 @@ GNOME desktop behind your windows and in the overview.
   show in the overview and the workspace switcher too.
 - **Rests when nobody can see it.** Nothing is drawn while windows cover the desktop, in
   power-saver mode, with animations off or with reduced motion on.
+- **Workspace titles.** Name a workspace with Super+F2 or the pencil in the top bar, and
+  see its name when you switch to it.
+- **Switch animation.** A workspace switch pulls back into a cel-shaded scene, races
+  through it and arrives at the next workspace.
 
 ## Weather
 
@@ -106,7 +115,47 @@ it and gather where it rests), **Ripples** (rings spreading from where it passes
 still water) and **Stardust** (fine sparkles left along its path). They read only where
 the pointer is, never a click or a key, and only while one of them is on.
 
-## Features
+## Workspace titles
+
+![The title "Photo Edits" near the top of the screen, above the workspace switcher's dots, on the second of four workspaces](docs/screenshots/titles/switch.jpg)
+
+When you switch workspaces with the keyboard, GNOME shows a row of dots near the bottom
+of the screen. Workspace FX adds the workspace's name near the top, in the same rounded
+box as the dots, appearing and fading with them. A workspace without a name shows no
+title. To see the current workspace's title without switching, rest the pointer on the
+workspace dots at the left of the top bar for half a second.
+
+To name the workspace you are on, press **Super+F2** or click the pencil in the top bar:
+the title opens for editing, with ✕ to remove the name and ✓ to keep it. Type the name and
+press Enter; Escape or a click elsewhere leaves it as it was.
+
+![The title being edited: "Photo Edits" selected, with a clear button left of it and a confirm button right of it](docs/screenshots/titles/rename.png)
+
+The names are GNOME's own (`org.gnome.desktop.wm.preferences workspace-names`), so other
+workspace tools show them too. GNOME matches those names to workspaces by position; Workspace
+FX keeps each name with its workspace when one before it closes, as happens with dynamic
+workspaces. The title box uses the dots' own style, so themes and extensions that restyle
+the workspace switcher (Blur my Shell, Just Perfection) restyle the title with it.
+
+## Switch animation
+
+Switch workspace with the keyboard and, instead of the slide, the workspace you are on pulls
+back into a scene, the camera races through it, and the next workspace zooms in until it
+fills the screen. The scenes are cel-shaded and drawn the way anime is: the scene holds each
+drawing for a few frames while your workspaces move smoothly, with focus lines at speed.
+Your patterns ride along on the workspaces.
+
+- **Corridor**: a curved concrete service tunnel with panel seams, cracks and lamps
+  overhead; the next workspace comes round the bend.
+- **Lift Shaft**: a fall past storey slabs, hazard lips and landing doors, turning as it goes.
+- **Warp**: streaks of light racing past toward a bright core, spinning with the switch.
+- **Cloud Sea**: a banking flight low over a sea of clouds.
+- **A Different One Each Time**.
+
+The scenes take their colour from your accent colour. Touchpad swipes keep GNOME's own
+slide, and with animations off switches are instant, as they are without it.
+
+## Wallpaper features
 
 - **Any base.** Draw the patterns over your own wallpaper, a gradient in GNOME's accent
   colour that follows it when it changes, one of eleven palettes, a picture of your
@@ -164,7 +213,7 @@ While it is on:
 - **To NOAA's Aviation Weather Center** (`aviationweather.gov`): the four-letter code of
   that town's airport weather station.
 - **With every request**, GWeather's user agent, which names libgweather, this extension
-  (`io.github.Jackicus.WallpaperFx`) and this repository's address, as MET Norway's terms
+  (`io.github.Jackicus.WorkspaceFx`) and this repository's address, as MET Norway's terms
   ask.
 
 Both are asked every half hour, and straight away when the place changes by more than
@@ -176,7 +225,10 @@ What it keeps, in the extension's settings (dconf, readable by programs running 
   (conditions, temperature, when it came). Turning Follow the Weather off clears them.
 - Your saved scenes, and the path of a custom picture.
 
-Gradient backgrounds are cached as images in `~/.cache/wallpaper-fx`.
+Gradient backgrounds are cached as images in `~/.cache/workspace-fx`.
+
+Workspace titles and the switch animation send nothing anywhere. The titles read and write
+only GNOME's list of workspace names.
 
 Forecasts are from the Norwegian Meteorological Institute (MET Norway), under the
 [NLOD 2.0](https://data.norge.no/nlod/en/2.0) and
@@ -189,8 +241,8 @@ It is not on extensions.gnome.org yet, so install it from source. You need `git`
 and `glib-compile-schemas`, which comes with GLib.
 
 ```bash
-git clone https://github.com/Jackicus/GNOME-Wallpaper-FX.git
-cd GNOME-Wallpaper-FX
+git clone https://github.com/Jackicus/GNOME-Workspace-FX.git
+cd GNOME-Workspace-FX
 make install
 ```
 
@@ -198,18 +250,33 @@ GNOME Shell only looks for new extensions when you log in. Log out, log back in,
 it on:
 
 ```bash
-gnome-extensions enable wallpaper-fx@jackicus
+gnome-extensions enable workspace-fx@jackicus
 ```
 
 To update, run `git pull && make install`, then log out and back in. To remove it, run
 `make uninstall`.
 
 It is written for GNOME Shell 51, the only version it claims; an older shell needs a port
-(1.2, the last release for 50, still runs there). [docs/compatibility.md](docs/compatibility.md) has the detail.
+(Wallpaper FX 1.2, the last release for 50, still runs there). [docs/compatibility.md](docs/compatibility.md) has the detail.
+
+### Coming from Wallpaper FX, Workspace Titles or Workspace Scenes
+
+Workspace FX is a new extension to GNOME (`workspace-fx@jackicus`), so it starts with its
+own settings. Turn the old ones off (`gnome-extensions disable wallpaper-fx@jackicus`, and
+the same for `workspace-titles@jackicus` and `workspace-scenes@jackicus`), remove them, and
+copy their settings across before you enable it:
+
+```bash
+dconf dump /org/gnome/shell/extensions/wallpaper-fx/ | dconf load /org/gnome/shell/extensions/workspace-fx/
+dconf dump /org/gnome/shell/extensions/workspace-titles/ | dconf load /org/gnome/shell/extensions/workspace-fx/titles/
+dconf dump /org/gnome/shell/extensions/workspace-scenes/ | dconf load /org/gnome/shell/extensions/workspace-fx/switch/
+```
+
+Workspace names are GNOME's own, so they are already there.
 
 ## Preferences
 
-Open them in the Extensions app, or with `gnome-extensions prefs wallpaper-fx@jackicus`.
+Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@jackicus`.
 
 <table>
   <tr>
@@ -227,6 +294,15 @@ Open them in the Extensions app, or with `gnome-extensions prefs wallpaper-fx@ja
   picture for dawn, day, dusk and night; a time without one uses the nearest). Under Parallax:
   Workspace Parallax and its Travel, Pointer Tilt and its reach, Pattern Depth, and Blur My
   Shell Compatibility (off by default).
+- **Titles**: Workspace Titles on or off; the Rename Shortcut (Super+F2 to begin with;
+  click the row and press a new one, with Ctrl, Alt or Super, or Backspace to remove it);
+  the Top Bar Button and its position (left, just right of the workspace dots; center,
+  right of the clock; or right, beside the system menu); Show on Hover; and the title's
+  position (top or middle) and size (small, large or huge).
+- **Switching**: Switch Animation on or off; the Scene; the Duration of a switch to the
+  next workspace (900 ms to begin with; jumping several takes a little longer); Scene
+  Drawings per Second (12, as anime is often drawn; 0 redraws every frame); Focus Lines;
+  and Impact Frame, one inverted drawing as the new workspace arrives.
 - **Performance**: the frame rate (every frame, every other frame, or about 60 or 30 a
   second, in step with each display), Pause While Covered (on by default) and Pause on
   Battery Power (off by default).
@@ -236,10 +312,10 @@ While the weather is choosing, the Patterns and Background pages are locked, wit
 
 ## Troubleshooting
 
-The extension logs to GNOME Shell's journal with the prefix `[WallpaperFx]`. To follow it:
+The extension logs to GNOME Shell's journal with the prefix `[WorkspaceFx]`. To follow it:
 
 ```bash
-journalctl -f -o cat /usr/bin/gnome-shell | grep -i 'WallpaperFx'
+journalctl -f -o cat /usr/bin/gnome-shell | grep -i 'WorkspaceFx'
 ```
 
 The preferences window runs in its own process:
@@ -265,6 +341,12 @@ From a clone, `make status` says whether the extension is installed and active, 
   GNOME Weather is running.
 - **"The weather service could not be reached".** It tries again ten minutes later; check
   the network connection.
+- **No title on a switch.** Only keyboard switches put up the workspace switcher, and a
+  workspace without a name shows none. Just Perfection with its workspace popup off, or
+  Workspace Matrix, replaces that popup, and the title with it.
+- **Switches still slide.** Touchpad swipes always do. After a GNOME update, a switch
+  that slides every time means the shell's switch animation has moved
+  ([docs/private-api.md](docs/private-api.md)); the journal says so under `[WorkspaceFx]`.
 - **An update changed nothing.** GNOME Shell keeps the old code until you log out and back
   in.
 
@@ -274,7 +356,7 @@ From a clone, `make status` says whether the extension is installed and active, 
 make link      # install as links into src/, for development
 make reload    # apply your edits to the running shell
 make nested    # a throwaway nested GNOME Shell, mirrored in a window
-make check     # ESLint, the schema, and every pattern's shader compiled offline
+make check     # ESLint, the schema, and every pattern's and scene's shader compiled offline
 make bench     # time each pattern on your GPU
 ```
 
