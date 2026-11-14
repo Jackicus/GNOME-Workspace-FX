@@ -132,8 +132,12 @@ $N --schemadir src/schemas set org.gnome.shell.extensions.workspace-fx.switch sc
 ## The README's screenshots
 
 JPEGs in `docs/screenshots/`: `deep-space.jpg` at 1600×833, `patterns/*.jpg` and
-`weather/*.jpg` at 960×500, and `prefs.png` and `scenes.png` the Patterns and Scenes
-pages of the preferences, the dialog cropped from a `shot` with its corners rounded off. Each
+`weather/*.jpg` at 960×500, and the preferences as PNGs taken with `window` in the dark
+scheme (`org.gnome.desktop.interface color-scheme prefer-dark` in the nested settings):
+`scenes.png` the Scenes page with `weather-place` set, `prefs.png` the Patterns page
+scrolled six notches (`enabled-effects` `['wave', 'sparkles', 'constellation']`),
+`prefs-titles.png` and `prefs-switching.png` the Titles and Switching pages at their
+defaults. Click the window's title bar first: `window` needs it focused. Each
 pattern is shown alone over a palette it suits; the particle patterns are cropped close,
 and Starfield, Sparkles and Embers are at twice their Amount and 1.5× their Brightness,
 which the README says. `titles/switch.jpg` is a `Super+Page_Down` shot onto "Photo Edits"
