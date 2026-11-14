@@ -31,7 +31,9 @@ it), one module per scene (`corridor.js`, `shaft.js`, `warp.js`, `sky.js`), and
 5. Anything that throws in `play()` finishes the half-made switch and falls back to the
    shell's slide.
 
-Touchpad swipes are the shell's (`_switchWorkspaceBegin/Update/End`), untouched.
+Touchpad swipes are the shell's (`_switchWorkspaceBegin/Update/End`), untouched. With
+reduced motion on (`St.Settings` `reduced-motion`), `animateSwitch` calls the shell's own,
+read per switch, as the wallpaper rests its patterns and tilt.
 
 ## The scene contract
 

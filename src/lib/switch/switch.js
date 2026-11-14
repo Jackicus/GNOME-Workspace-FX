@@ -33,6 +33,11 @@ export class WorkspaceFxSwitch {
         this._controller = controller;
         this._own = Object.hasOwn(controller, 'animateSwitch') ? original : null;
         this._animateSwitch = function (from, to, direction, onComplete) {
+            // The shell's slide is the motion reduced motion still allows.
+            if (St.Settings.get().reduced_motion === St.ReducedMotion.REDUCE) {
+                original.call(this, from, to, direction, onComplete);
+                return;
+            }
             try {
                 play(this, settings, from, to, direction, onComplete);
             } catch (e) {
