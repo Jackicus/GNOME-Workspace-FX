@@ -1,8 +1,8 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import GWeather from 'gi://GWeather?version=4.0';
 
 import { phaseOfDay } from './sun.js';
-import { weatherPlace } from './weather.js';
 
 const STEP_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -55,7 +55,10 @@ export class Daytime {
     }
 
     _update() {
-        const coords = weatherPlace(this._shellWeather)?.get_coords() ?? null;
+        // GNOME Weather's first place, as the shell keeps it: read here, never looked for.
+        const [serialized] = this._shellWeather.get_value('locations').deepUnpack();
+        const place = serialized ? GWeather.Location.get_world().deserialize(serialized) : null;
+        const coords = place?.has_coords() ? place.get_coords() : null;
         const at = time => (coords ? phaseOfDay(time, ...coords) : byClock(time));
         const now = Date.now();
         const period = at(now);

@@ -23,8 +23,7 @@ the switch animation are on). Report in two parts.
   scratch home.
 - **mirror** — open on the desktop, or closed (`./scripts/nested.sh mirror on`).
 - **drawing** — from the nested settings: `enabled-effects`, `background-mode`
-  (and the palette or image path it implies), `speed`, `opacity`, `target-fps`,
-  and `weather` (while it is on, its look stands in for the patterns and tuning).
+  (and the palette or image path it implies), `speed`, `opacity` and `target-fps`.
 
 **Real session (read-only)**, which these commands only read:
 

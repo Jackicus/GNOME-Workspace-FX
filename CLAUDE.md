@@ -16,8 +16,8 @@ repository's `archive/workspace-titles` and `archive/workspace-scenes` tags.
 
 This extension's own tooling: `./scripts/dev.d/workspace-fx.sh` (`shaders`, `counts`, `prefs`),
 the Makefile's `zip`, `bench` and `prefs`, and `./scripts/nested.d/workspace-fx.sh`
-(`weather-place`, a stand-in GNOME Weather place in the nested settings, and GNOME
-Weather's desktop entry under `--stand-in`).
+(`weather-place`, a stand-in GNOME Weather place in the nested settings, for the Time of
+Day base's sun).
 
 - **`make check`** is everything that needs no shell, display or GPU, and what CI runs:
   `make lint`, then `./scripts/dev.sh check`: the schema under `--strict`, and
@@ -43,7 +43,7 @@ one**; `docs/private-api.md` (every reach into shell internals); `docs/compatibi
 (what has been tested where); `docs/publishing.md` (making the extensions.gnome.org zip).
 Area detail lives in `.claude/rules/`: `shaders.md` (patterns, the shader wrapper, the
 offline tools), `background.md` (the base and the overview's clones), `parallax.md`
-(parallax and the pointer tilt) and `weather.md` (the weather and the time of day).
+(parallax and the pointer tilt) and `daytime.md` (the time of day).
 
 ## Layout
 
@@ -70,7 +70,7 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   pattern, its snippet built on first use and shared by every monitor), plus the GLSL
   prelude every pattern gets.
 - `lib/catalog.js`: **the single list of patterns** (id, title, description, layer
-  module), in the order they are drawn (sky first, weather last). `prefs.js` builds its
+  module), in the order they are drawn (sky first, rain and snow last). `prefs.js` builds its
   rows from it and the engine draws in its order, so adding a pattern is a file in
   `lib/layers/`, an entry here, and nothing else.
 - `lib/layers/*.js`: one pattern each, keeping the contract in `docs/patterns.md`.
@@ -84,22 +84,18 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
 - `lib/system.js`: the system's say: UPower's `OnBattery` (for `pause-on-battery`),
   power-profiles-daemon's active profile, and St's `enable-animations` and `reduced-motion`.
 - `lib/daytime.js`: `Daytime`, kept by wallpaper.js only while the base is `daytime`: the period
-  of the day at GNOME Weather's place, with one timer to the next change.
+  of the day from the sun (`lib/sun.js`, pure) at GNOME Weather's place, read but never
+  looked for, or the clock without one, with one timer to the next change.
 - `lib/pointer.js`: `PointerTrail`, kept by wallpaper.js only while a React pattern (catalog
   `react`) is on: the pointer's samples from the cursor tracker over the last three
   seconds, handed to each React layer's `State` in its own canvas pixels.
-- `lib/weather.js`: `WeatherWatcher`, for the weather scene: a GWeather report for the
-  first place in GNOME Weather's list, read into plain conditions, and the time of day,
-  kept in `weather-status`. `lib/looks.js` turns those into a scene's values (pure, so
-  `node` can run it); `lib/sun.js` gives dawn, day, dusk or night.
 - `lib/scenes.js`: the user's saved scenes (saving, applying, matching), used only by
   prefs; a scene is just the values of `SCENE_KEYS`.
-- `lib/palettes.js`: the named gradients for `color` mode (the last three are the
-  weather's skies) and the accent colours for `accent`. `lib/layer.js`: the seeded PRNG
+- `lib/palettes.js`: the named gradients for `color` mode and the accent colours for
+  `accent`. `lib/layer.js`: the seeded PRNG
   for what layers work out on the CPU, and the helpers they generate GLSL with (`num`,
   `vec3`, `slots`).
-- `prefs.js`, `schemas/`: the settings dialog (Scenes, with the weather and the user's
-  own; Patterns; Background; Titles and Switching, from `lib/titlesPrefs.js` and
+- `prefs.js`, `schemas/`: the settings dialog (Scenes, the user's saved looks; Patterns; Background; Titles and Switching, from `lib/titlesPrefs.js` and
   `lib/switchPrefs.js`; Performance) and the keys behind it. The wallpaper's keys are
   `org.gnome.shell.extensions.workspace-fx`; the titles' and the switch animation's are
   its `.titles` and `.switch` child schemas, at `titles/` and `switch/` under its path,
@@ -133,11 +129,8 @@ function of time and every clock is shared, the parts agree without talking to e
 other. Saved scenes are prefs-only: applying one writes a handful of keys, and the
 extension simply follows them.
 
-**The weather is a scene that changes by itself.** With `weather` on, wallpaper.js keeps a
-`WeatherWatcher`, and while it has a report its look stands in for `enabled-effects`,
-`pattern-tuning` and, with `weather-background`, the base, in `_state()`; the user's own
-keys are never written, so turning it off brings their look straight back, and prefs
-locks the Patterns and Background pages meanwhile.
+Nothing goes to the network: the Time of Day base reads GNOME Weather's place only to
+work out where the sun is.
 
 **Pacing hangs off the paint.** Each pattern's effect calls back from
 `vfunc_paint_target`; the first paint of a frame books the next repaint for `divisor`

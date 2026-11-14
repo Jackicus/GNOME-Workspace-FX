@@ -63,11 +63,10 @@ Nothing else has been tested:
 
 - **GNOME 45 to 50** are not claimed. 50 ran release 1.2; this code needs
   `Clutter.ShaderEffect.get_static_snippet`, which mutter 50 lacks.
-- **On 51, the weather, power-saver, battery and plugging a monitor in or out
-  have not been run.** Only 50.5 has shown them. The paths under them are
-  unchanged at `51.1` (below). The nested shell's monitors are fixed at start,
-  `powerprofilesctl` would change the real machine, the desktop has no battery,
-  and the weather goes to the network.
+- **On 51, power-saver, battery and plugging a monitor in or out have not been
+  run.** Only 50.5 has shown them. The paths under them are unchanged at `51.1`
+  (below). The nested shell's monitors are fixed at start, `powerprofilesctl`
+  would change the real machine, and the desktop has no battery.
 - **No Mesa GPU** (AMD, Intel), no GLES2-only GPU, no virtual machine.
 - **No X11 session.** 45 to 48 have one, 49 turns it off by default, and 50
   removed it (gjs.guide, "Port Extensions to GNOME Shell 49" and "... 50").
@@ -234,29 +233,23 @@ there.
 `org.gnome.desktop.a11y.interface reduced-motion` to `reduce`, and the patterns
 should stop. Set it back and they resume.
 
-### The weather (weather.js, sun.js)
+### The time of day (daytime.js, sun.js)
 
 GWeather 4 is a dependency of GNOME Shell itself for every claimed version, so
 it is always there; it is imported as `gi://GWeather?version=4.0`, as the shell
-does.
+does, only to read GNOME Weather's place back.
 
 - **GNOME Weather's place** is read from the shell's `org.gnome.shell.weather`
   `locations` (docs/private-api.md). Checked in the nested shell on 50.5 with a
-  stand-in place written into its own settings: the report, the place in the
-  preferences and the change to a second place all follow the key. GNOME
-  Weather itself writing the key through the shell was not run there.
-- **GWeather** was run against live MET Norway and METAR data on 4.6.0 for
-  Dublin, Bergen (light rain, from the station), Tromsø (no station, so MET
-  Norway's next hour) and Singapore (daytime), outside the shell and in the
-  nested shell. Its enums (`Sky`, `ConditionPhenomenon`,
-  `ConditionQualifier`) have not changed through libgweather 4.
+  stand-in place written into its own settings, and a change to a second place
+  followed. GNOME Weather itself writing the key through the shell was not run
+  there.
 - **The sun** is plain arithmetic. It was checked against GWeather's sunrise
   and sunset for Dublin, and agrees to within a third of a degree.
 
-*Check first:* choose a place in GNOME Weather and turn on Follow the Weather.
-The row should say the conditions and the temperature within a few seconds, and
-the desktop should change to match. Choose another place in GNOME Weather, and
-the extension should follow it.
+*Check first:* choose a place in GNOME Weather and set the background to Time of
+Day with a picture for each period; the picture should be the one for the
+period at that place. Clear the place, and it should follow the clock.
 
 ### The preferences (prefs.js)
 
@@ -368,10 +361,7 @@ in 51, so each scene is a `Clutter.ShaderEffect` returning its snippet from
 11. Test each pause: a fullscreen window, maximized windows, power-saver,
     animations off, reduced motion, and battery on a laptop.
 12. Open the preferences, go through every page, choose a picture, and save
-    and delete a scene. Follow the weather for the place in GNOME Weather,
-    then change it there. Lock and unlock while it is on:
-    the weather should be there at once, not after a moment of your own
-    patterns.
+    and delete a scene. With Time of Day, change the place in GNOME Weather.
 13. With two monitors, turn `span-monitors` on and off, and plug and unplug a
     monitor while the extension is enabled.
 14. Disable and enable ten times, then watch `make logs` and the shell's CPU

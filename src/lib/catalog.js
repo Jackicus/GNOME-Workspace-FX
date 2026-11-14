@@ -19,8 +19,8 @@ import * as ripples from './layers/ripples.js';
 import * as stardust from './layers/stardust.js';
 
 // In the order they are drawn, each over the ones before; docs/patterns.md has a layer's exports.
-// `weather` marks the ones the weather scene draws, and `react` the ones that answer the
-// pointer, which prefs lists apart. With parallax,
+// `weather` marks the weather's own (rain, fog, a storm…), and `react` the ones that answer
+// the pointer, which prefs lists apart. With parallax,
 // a pattern pans `depth` times as far as the wallpaper: further back is nearer 1.
 export const EFFECTS = [
     { id: 'nebula', title: 'Nebula', desc: 'Slow clouds of violet, teal and magenta light turning over each other', depth: 1.3, ...nebula },
