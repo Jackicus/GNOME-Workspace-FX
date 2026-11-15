@@ -3,14 +3,12 @@
 What holds for any extension worked on this way is in `.claude/rules/` (`workflow.md`, `live-session.md`, `simplicity.md`, `gjs-st.md`), loaded with this file, and the skills are in `.claude/skills/`.
 
 A GNOME Shell extension (UUID `workspace-fx@jackicus`; written for and claiming GNOME
-Shell 51) in three parts. **The wallpaper** paints stackable animated patterns over the
-desktop: GPU shaders on actors sitting on the wallpaper itself, no window. **Titles** show
-a workspace's name with the shell's switcher popup and edit it in place
-(`.claude/rules/titles.md`). **The switch animation** turns a keyboard workspace switch
-into a camera move through a cel-shaded scene (`.claude/rules/switch.md`). Settings are a
-libadwaita prefs dialog. The log prefix is `[WorkspaceFx]`. It was Wallpaper FX until
-Workspace Titles and Workspace Scenes were merged in; their histories are this
-repository's `archive/workspace-titles` and `archive/workspace-scenes` tags.
+Shell 51) in two parts. **The wallpaper** paints stackable animated patterns over the
+desktop: GPU shaders on actors sitting on the wallpaper itself, no window. **The switch
+animation** turns a keyboard workspace switch into a camera move through a cel-shaded
+scene (`.claude/rules/switch.md`). Settings are a libadwaita prefs dialog. The log prefix
+is `[WorkspaceFx]`. It was Wallpaper FX until Workspace Scenes was merged in; its history
+is this repository's `archive/workspace-scenes` tag.
 
 ## Checking and seeing it
 
@@ -51,9 +49,9 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   an install compiles the shaders once and reuses them across every lock and unlock.
   Under the link, an unlock with no edit between reuses the same stage, and so the
   compiled shaders, as an install does.
-- `lib/app.js`: `WorkspaceFxApp`, the three parts: the wallpaper always, titles
-  (`lib/titles.js`) and the switch animation (`lib/switch.js`) each while the `enabled` key
-  of its child schema is on, enabled and disabled live as it changes.
+- `lib/app.js`: `WorkspaceFxApp`, the two parts: the wallpaper always, and the switch
+  animation (`lib/switch.js`) while the `enabled` key of its child schema is on, enabled
+  and disabled live as it changes.
 - `lib/wallpaper.js`: `WorkspaceFxWallpaper`, reads settings, works out what each monitor draws (its own canvas, or
   its part of one spanning all of them), builds one `MonitorRenderer` per monitor into
   `Main.layoutManager._backgroundGroup` (over the wallpaper, under the windows),
@@ -95,13 +93,11 @@ offline tools), `background.md` (the base and the overview's clones), `parallax.
   `accent`. `lib/layer.js`: the seeded PRNG
   for what layers work out on the CPU, and the helpers they generate GLSL with (`num`,
   `vec3`, `slots`).
-- `prefs.js`, `schemas/`: the settings dialog (Scenes, the user's saved looks; Patterns; Background; Titles and Switching, from `lib/titlesPrefs.js` and
-  `lib/switchPrefs.js`; Performance) and the keys behind it. The wallpaper's keys are
-  `org.gnome.shell.extensions.workspace-fx`; the titles' and the switch animation's are
-  its `.titles` and `.switch` child schemas, at `titles/` and `switch/` under its path,
-  each read through its own `Gio.Settings`, so the wallpaper's `changed` handler never
-  sees them.
-- `stylesheet.css`: the titles' only (`workspace-fx-titles-*`).
+- `prefs.js`, `schemas/`: the settings dialog (Scenes, the user's saved looks; Patterns;
+  Background; Switching, from `lib/switchPrefs.js`; Performance) and the keys behind it.
+  The wallpaper's keys are `org.gnome.shell.extensions.workspace-fx`; the switch
+  animation's are its `.switch` child schema, at `switch/` under its path, read through
+  its own `Gio.Settings`, so the wallpaper's `changed` handler never sees them.
 
 ## How it fits together
 

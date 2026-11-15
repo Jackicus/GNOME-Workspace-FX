@@ -6,7 +6,6 @@ import Gio from 'gi://Gio';
 
 import { EFFECTS } from './lib/catalog.js';
 import { switchPage } from './lib/switchPrefs.js';
-import { titlesPage } from './lib/titlesPrefs.js';
 import { PALETTES } from './lib/palettes.js';
 import { SCENE_KEYS, applyScene, deleteScene, isCurrent, saveScene, savedScenes } from './lib/scenes.js';
 
@@ -41,7 +40,6 @@ export default class WorkspaceFxPreferences extends ExtensionPreferences {
         window.add(this._patternsPage(ui));
         window.add(this._backgroundPage(ui));
         const schema = this.metadata['settings-schema'];
-        window.add(titlesPage(window, this.getSettings(`${schema}.titles`)));
         window.add(switchPage(this.getSettings(`${schema}.switch`)));
         window.add(this._performancePage(ui));
     }

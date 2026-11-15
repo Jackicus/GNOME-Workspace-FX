@@ -8,16 +8,14 @@ path that depends on the shell's version, and what a port to another version
 ## What has been tested
 
 Until 2026-11-14 the extension was Wallpaper FX (`wallpaper-fx@jackicus`, log prefix
-`[WallpaperFx]`), and the titles and the switch animation were Workspace Titles and
-Workspace Scenes; the runs below on earlier dates were of those.
+`[WallpaperFx]`), and the switch animation was Workspace Scenes; the runs below on
+earlier dates were of those.
 
 - **Workspace FX, merged: GNOME Shell 51.1** on the main desktop (NVIDIA GTX 1080), in
   the nested shell on 2026-11-14, through the development link: enable from a clean
-  start, the Corridor switch with the patterns riding on the cards, a title on a named
-  workspace and none on an unnamed one, the rename editor, the titles and the switch
-  animation turned off and on again live (the pencil and the scene go and come back),
-  both together, the preferences' six pages with their on/off switches greying their
-  rows, a disable and enable, and a `stop` and `start`. No errors with the
+  start, the Corridor switch with the patterns riding on the cards, the switch
+  animation turned off and on again live, the preferences with the Switching page's
+  on/off switch greying its rows, a disable and enable, and a `stop` and `start`. No errors with the
   `[WorkspaceFx]` prefix.
 - **The main desktop: GNOME Shell 51.1** on CachyOS (Arch-based), Wayland, with
   an NVIDIA GeForce GTX 1080 on the proprietary driver 580.178.04. The rest of
@@ -293,31 +291,6 @@ should open the file chooser, and you should be able to save and delete a scene.
 - **`Gio.DBusProxy.makeProxyWrapper()`** returns a `Gio.DBusProxy` subclass in
   51, and the wrapper it returns must be called with `new` (gjs.guide, 51 port
   page). `system.js` already does (`new Proxy(...)` in `_watch()`).
-
-### The titles (titles.js, title.js, editor.js, names.js)
-
-Read at `50.5` and `51.1` on 2026-10-28, and booted on 51.1 as Workspace Titles.
-
-- **`St.FocusManager.navigate_from_event()` is gone** (gnome-shell 5ca6fb233). The
-  editor called it from its key handler for Tab and the arrows. Each focus group now
-  carries a `Clutter.KeyController` that navigates by itself, under a grab too, but key
-  events only pass through reactive actors (mutter's `clutter_actor_collect_event_actors`),
-  so the editor's box is made reactive. A click on the box itself no longer cancels.
-- **Unchanged and checked**: `ui/workspaceSwitcherPopup.js` (no diff: `display`,
-  `_redisplayAllPopups` calling `redisplay` on every child, `ANIMATION_TIME`),
-  `Main.wm.insertWorkspace` and `addKeybinding`, `Main.panel.statusArea.activities` and
-  its `hover`, `PanelMenu.Button`'s `_init(alignment, name, dontCreateMenu)`,
-  `Layout.MonitorConstraint`, `Main.pushModal`, `St.Entry`'s `hint_text` and
-  `clutter_text`.
-- **Event signals give way to controllers**: 51 deprecates connecting to the event signals,
-  and its own `js/` overrides none of their vfuncs. The pencil's Return and space are a
-  `Clutter.KeyController`, the editor's Escape another, and its press outside the box a
-  `Clutter.ClickGesture` that recognizes on press, as `PopupMenuManager` closes a menu.
-- Seen working then: the title on a keyboard switch (none for an unnamed workspace), hover
-  on the workspace dots, the pencil, renaming by typing, ✕ by click, Tab, Shift+Tab and
-  the arrows between the entry and its buttons, Escape and a click outside, the editor
-  over the overview, an insert with dynamic workspaces, the preferences, and `stop` +
-  `start`.
 
 ### The switch animation (switch.js, switchView.js, switchShader.js)
 

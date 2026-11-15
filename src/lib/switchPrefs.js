@@ -1,7 +1,7 @@
 import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
 
-import { comboRow } from './titlesPrefs.js';
 import { SCENES } from './switch/scenes.js';
 
 // The Switching page. Its own process's code: Gtk and Adw only.
@@ -15,9 +15,16 @@ export function switchPage(settings) {
     });
     settings.bind('enabled', enabled, 'active', Gio.SettingsBindFlags.DEFAULT);
     top.add(enabled);
-    const scene = comboRow(settings, 'scene', 'Scene',
-        [...SCENES.map(s => [s.id, s.name]), ['random', 'A Different One Each Time']]);
-    scene.subtitle = 'What a workspace switch passes through';
+    const choices = [...SCENES.map(s => [s.id, s.name]), ['random', 'A Different One Each Time']];
+    const scene = new Adw.ComboRow({
+        title: 'Scene',
+        subtitle: 'What a workspace switch passes through',
+        model: Gtk.StringList.new(choices.map(([, name]) => name)),
+    });
+    const syncScene = () => (scene.selected = choices.findIndex(([id]) => id === settings.get_string('scene')));
+    settings.connect('changed::scene', syncScene);
+    syncScene();
+    scene.connect('notify::selected', () => settings.set_string('scene', choices[scene.selected][0]));
     top.add(scene);
     page.add(top);
 
@@ -50,3 +57,4 @@ export function switchPage(settings) {
         settings.bind('enabled', row, 'sensitive', Gio.SettingsBindFlags.GET);
     return page;
 }
+
