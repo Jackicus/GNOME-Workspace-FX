@@ -8,8 +8,8 @@ Run `./scripts/nested.sh status`, `./scripts/dev.sh status` and
 If a nested shell is running, also read what it draws with
 `./scripts/nested.sh run timeout 5 gsettings --schemadir src/schemas get
 org.gnome.shell.extensions.workspace-fx <key>` (or `list-recursively` for the lot, and
-the same for its `.titles` and `.switch` child schemas, which hold whether the titles and
-the switch animation are on). Report in two parts.
+the same for its `.switch` child schema, which holds whether the switch animation is
+on). Report in two parts.
 
 **Nested shell** (where changes are tried):
 

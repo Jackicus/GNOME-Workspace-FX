@@ -2,12 +2,11 @@
 
 Your GNOME desktop and workspaces, animated. Animated wallpapers drawn by your GPU: aurora,
 nebulae, starfields, snow, rain and more, nineteen patterns you can stack and tune, painted
-behind your windows and in the overview. Names for your
-workspaces, shown in large type as you switch to one. And workspace switches as a camera
-move through a scene.
+behind your windows and in the overview. And workspace switches as a camera move through
+a scene.
 
-It was Wallpaper FX; Workspace Titles and Workspace Scenes are now part of it. Each of the
-three can be turned off on its own.
+It was Wallpaper FX; Workspace Scenes is now part of it. Each of the two can be turned off
+on its own.
 
 ![A dark violet and blue nebula filled with small stars, a few of them joined by faint lines, and a meteor streaking across the upper right](docs/screenshots/deep-space.jpg)
 <sub>Nebula, Starfield and Constellation together, with a meteor on its way through.</sub>
@@ -24,8 +23,6 @@ three can be turned off on its own.
   show in the overview and the workspace switcher too.
 - **Rests when nobody can see it.** Nothing is drawn while windows cover the desktop, in
   power-saver mode, with animations off or with reduced motion on.
-- **Workspace titles.** Name a workspace with Super+F2 or the pencil in the top bar, and
-  see its name when you switch to it.
 - **Switch animation.** A workspace switch pulls back into a cel-shaded scene, races
   through it and arrives at the next workspace.
 
@@ -77,28 +74,6 @@ best seen moving: **Firefly Swarm** (fireflies that follow the pointer, string o
 it and gather where it rests), **Ripples** (rings spreading from where it passes, as on
 still water) and **Stardust** (fine sparkles left along its path). They read only where
 the pointer is, never a click or a key, and only while one of them is on.
-
-## Workspace titles
-
-![The title "Photo Edits" near the top of the screen, above the workspace switcher's dots, on the second of four workspaces](docs/screenshots/titles/switch.jpg)
-
-When you switch workspaces with the keyboard, GNOME shows a row of dots near the bottom
-of the screen. Workspace FX adds the workspace's name near the top, in the same rounded
-box as the dots, appearing and fading with them. A workspace without a name shows no
-title. To see the current workspace's title without switching, rest the pointer on the
-workspace dots at the left of the top bar for half a second.
-
-To name the workspace you are on, press **Super+F2** or click the pencil in the top bar:
-the title opens for editing, with ✕ to remove the name and ✓ to keep it. Type the name and
-press Enter; Escape or a click elsewhere leaves it as it was.
-
-![The title being edited: "Photo Edits" selected, with a clear button left of it and a confirm button right of it](docs/screenshots/titles/rename.png)
-
-The names are GNOME's own (`org.gnome.desktop.wm.preferences workspace-names`), so other
-workspace tools show them too. GNOME matches those names to workspaces by position; Workspace
-FX keeps each name with its workspace when one before it closes, as happens with dynamic
-workspaces. The title box uses the dots' own style, so themes and extensions that restyle
-the workspace switcher (Blur my Shell, Just Perfection) restyle the title with it.
 
 ## Switch animation
 
@@ -164,7 +139,6 @@ Nothing is sent anywhere, and nothing goes online.
 - **Time of Day** reads the first place in [GNOME Weather](https://apps.gnome.org/Weather/)'s
   list, as GNOME Shell keeps it (`org.gnome.shell.weather`), to work out where the sun is,
   on your machine. Without one it follows the clock. Your location is never asked for.
-- **Workspace titles** read and write only GNOME's list of workspace names.
 - The extension's settings (dconf, readable by programs running as you) keep your saved
   scenes and the paths of your custom pictures. Gradient backgrounds are cached as images
   in `~/.cache/workspace-fx`.
@@ -193,20 +167,17 @@ To update, run `git pull && make install`, then log out and back in. To remove i
 It is written for GNOME Shell 51, the only version it claims; an older shell needs a port
 (Wallpaper FX 1.2, the last release for 50, still runs there). [docs/compatibility.md](docs/compatibility.md) has the detail.
 
-### Coming from Wallpaper FX, Workspace Titles or Workspace Scenes
+### Coming from Wallpaper FX or Workspace Scenes
 
 Workspace FX is a new extension to GNOME (`workspace-fx@jackicus`), so it starts with its
 own settings. Turn the old ones off (`gnome-extensions disable wallpaper-fx@jackicus`, and
-the same for `workspace-titles@jackicus` and `workspace-scenes@jackicus`), remove them, and
-copy their settings across before you enable it:
+the same for `workspace-scenes@jackicus`), remove them, and copy their settings across
+before you enable it:
 
 ```bash
 dconf dump /org/gnome/shell/extensions/wallpaper-fx/ | dconf load /org/gnome/shell/extensions/workspace-fx/
-dconf dump /org/gnome/shell/extensions/workspace-titles/ | dconf load /org/gnome/shell/extensions/workspace-fx/titles/
 dconf dump /org/gnome/shell/extensions/workspace-scenes/ | dconf load /org/gnome/shell/extensions/workspace-fx/switch/
 ```
-
-Workspace names are GNOME's own, so they are already there.
 
 ## Preferences
 
@@ -214,12 +185,9 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
 
 <table>
   <tr>
-    <td align="center" width="50%"><img src="docs/screenshots/scenes.png" alt="The Scenes page: Your Scenes, with Save Your Look As… and one saved scene, Waves, ticked as the look showing now"><br><b>Scenes</b></td>
-    <td align="center" width="50%"><img src="docs/screenshots/prefs.png" alt="The Patterns page, scrolled to where the Ambient group ends and the Weather group begins: Sparkles switched on, Embers, Fireflies and Bokeh off, then Clouds, Sunbeams, Lightning, Fog and Snow, each with a description, a switch and an expander"><br><b>Patterns</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/prefs-titles.png" alt="The Titles page: Workspace Titles on; under Renaming, the Rename Shortcut Super+F2, Top Bar Button on and Button Position Left; under Title, Show on Hover on, Position Top and Size Large"><br><b>Titles</b></td>
-    <td align="center"><img src="docs/screenshots/prefs-switching.png" alt="The Switching page: Switch Animation on with the Scene Corridor; under Motion, Duration 900 and Scene Drawings per Second 12; under Style, Focus Lines on and Impact Frame off"><br><b>Switching</b></td>
+    <td align="center" width="33%"><img src="docs/screenshots/scenes.png" alt="The Scenes page: Your Scenes, with Save Your Look As… and one saved scene, Waves, ticked as the look showing now"><br><b>Scenes</b></td>
+    <td align="center" width="33%"><img src="docs/screenshots/prefs.png" alt="The Patterns page, scrolled to where the Ambient group ends and the Weather group begins: Sparkles switched on, Embers, Fireflies and Bokeh off, then Clouds, Sunbeams, Lightning, Fog and Snow, each with a description, a switch and an expander"><br><b>Patterns</b></td>
+    <td align="center" width="33%"><img src="docs/screenshots/prefs-switching.png" alt="The Switching page: Switch Animation on with the Scene Corridor; under Motion, Duration 900 and Scene Drawings per Second 12; under Style, Focus Lines on and Impact Frame off"><br><b>Switching</b></td>
   </tr>
 </table>
 
@@ -231,11 +199,6 @@ Open them in the Extensions app, or with `gnome-extensions prefs workspace-fx@ja
   picture for dawn, day, dusk and night; a time without one uses the nearest). Under Parallax:
   Workspace Parallax and its Travel, Pointer Tilt and its reach, Pattern Depth, and Blur My
   Shell Compatibility (off by default).
-- **Titles**: Workspace Titles on or off; the Rename Shortcut (Super+F2 to begin with;
-  click the row and press a new one, with Ctrl, Alt or Super, or Backspace to remove it);
-  the Top Bar Button and its position (left, just right of the workspace dots; center,
-  right of the clock; or right, beside the system menu); Show on Hover; and the title's
-  position (top or middle) and size (small, large or huge).
 - **Switching**: Switch Animation on or off; the Scene; the Duration of a switch to the
   next workspace (900 ms to begin with; jumping several takes a little longer); Scene
   Drawings per Second (12, as anime is often drawn; 0 redraws every frame); Focus Lines;
@@ -273,9 +236,6 @@ From a clone, `make status` says whether the extension is installed and active, 
 - **Time of Day changes at the wrong time.** Without a place in GNOME Weather it follows
   fixed hours; choose your town there, and GNOME Shell picks it up while GNOME Weather
   is running.
-- **No title on a switch.** Only keyboard switches put up the workspace switcher, and a
-  workspace without a name shows none. Just Perfection with its workspace popup off, or
-  Workspace Matrix, replaces that popup, and the title with it.
 - **Switches still slide.** Touchpad swipes always do. After a GNOME update, a switch
   that slides every time means the shell's switch animation has moved
   ([docs/private-api.md](docs/private-api.md)); the journal says so under `[WorkspaceFx]`.

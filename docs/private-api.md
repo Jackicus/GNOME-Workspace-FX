@@ -3,10 +3,7 @@
 Workspace FX puts a canvas between the wallpaper and the windows, makes its
 base the shell's own wallpaper, and follows both into the overview and the
 workspace slide; its switch animation replaces that slide. None of that has a
-public API. Its titles reach nothing private: they wrap the exported
-`WorkspaceSwitcherPopup.prototype.display` and `Main.wm.insertWorkspace` with the
-`InjectionManager`, and read `Main.panel.statusArea.activities`. This is everything it reaches
-into, for reviewers on extensions.gnome.org and for whoever ports it to the next
+public API. This is everything it reaches into, for reviewers on extensions.gnome.org and for whoever ports it to the next
 GNOME.
 
 Every entry was checked against the GNOME Shell 50.5 JavaScript on the main
@@ -623,7 +620,7 @@ calls `_workspaceAnimation.animateSwitch` from `_switchWorkspace` and
 
 | Expression | What for | If it changes |
 |---|---|---|
-| `Main.wm._workspaceAnimation` | The `WorkspaceAnimationController` instance that animates every switch | A warning at enable; the shell's slide stays, and the wallpaper and titles enable as usual |
+| `Main.wm._workspaceAnimation` | The `WorkspaceAnimationController` instance that animates every switch | A warning at enable; the shell's slide stays, and the wallpaper enables as usual |
 | `controller.animateSwitch` (replaced on the instance) | The one place a keyboard or programmatic switch is animated. Put back on disable only while it is still ours, to whatever was there | Switches show the shell's slide |
 | `controller._prepareWorkspaceSwitch(indices)`, `controller._switchData` (`.monitors`, `.inProgress`), `controller._finishWorkspaceSwitch(switchData)` | The shell builds and tears down the clones, the grab and unredirection exactly as for its own slide, so mutter's cancellation and the overview keep working. `_prepareWorkspaceSwitch` is the one `overview.js` wraps, so the patterns are in the groups the switch moves | `play()` throws, the half-made switch is finished and the slide runs instead |
 | `controller._swipeTracker.enabled` | Off while a scene runs, as the shell's own `animateSwitch` does, so a swipe cannot start a second switch over it | Same |

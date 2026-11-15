@@ -39,13 +39,11 @@ LICENSE
 metadata.json
 extension.js
 prefs.js
-stylesheet.css
 schemas/org.gnome.shell.extensions.workspace-fx.gschema.xml
 lib/app.js  lib/background.js  lib/catalog.js  lib/daytime.js  lib/engine.js
 lib/layer.js  lib/overview.js  lib/palettes.js  lib/parallax.js
 lib/pointer.js  lib/scenes.js  lib/shader.js  lib/sun.js  lib/system.js
 lib/wallpaper.js
-lib/titles.js  lib/title.js  lib/editor.js  lib/names.js  lib/titlesPrefs.js
 lib/switch.js  lib/switchView.js  lib/switchShader.js  lib/switchPrefs.js
 lib/layers/{aurora,bokeh,clouds,constellation,contours,embers,fireflies,fog,
             lightning,nebula,rain,ripples,snow,sparkles,stardust,starfield,
@@ -105,7 +103,7 @@ the link afterwards. This is also the only way to run the shipped
 | `name` | `Workspace FX` | See [the name](#copyrights-and-trademarks-meets) |
 | `description` | two paragraphs | Covers the points below |
 | `shell-version` | 51 | The one version that has been run, and the one the code is written for |
-| `settings-schema` | set | Correct; the wallpaper's `getSettings()` is called without arguments, which is what Best Practices asks. The titles' and the switch animation's child schemas are `getSettings()` of that id plus `.titles` and `.switch`, read from `metadata['settings-schema']`, so no schema id is written in the code |
+| `settings-schema` | set | Correct; the wallpaper's `getSettings()` is called without arguments, which is what Best Practices asks. The switch animation's child schema is `getSettings()` of that id plus `.switch`, read from `metadata['settings-schema']`, so no schema id is written in the code |
 | `url` | GitHub repo | Correct |
 | `version` | absent | Correct: "This field SHOULD NOT be set by extension developers" ([Anatomy](https://gjs.guide/extensions/overview/anatomy.html)); EGO assigns it |
 | `version-name` | `1.2` | Bump with each upload |
@@ -132,9 +130,8 @@ that could look like a bug. It says:
 - in the Accent, Color and Custom Picture modes it replaces the wallpaper
   the shell shows (the desktop, the overview, and extensions that blur it)
   without changing the user's wallpaper setting;
-- it has three parts, each of which can be turned off: the wallpaper's patterns,
-  workspace titles (Super+F2 and a pencil in the top bar) and the switch animation;
-- workspace names are GNOME's own, so other workspace tools show them;
+- it has two parts, each of which can be turned off: the wallpaper's patterns
+  and the switch animation;
 - it stays still when animations are off or reduced motion is on. GNOME also
   turns animations off in virtual machines without 3D acceleration and during
   remote-desktop sessions;
@@ -157,8 +154,7 @@ the module scope of everything under `lib/` runs when the extension is loaded,
 before `enable()`. All of it is definitions: the `WorkspaceFxPreviewHost` class, the
 D-Bus interfaces from `makeProxyWrapper()` in `system.js`, the catalog and its
 shader strings, an empty `Map` in `shader.js` and in `switchShader.js`, a `Set` of
-key names in `wallpaper.js`, the parts in `app.js`, the switch scenes and their GLSL,
-the indicator places in `titles.js`, and a constant `fireflies.js` works out from its own
+key names in `wallpaper.js`, the switch scenes and their GLSL, and a constant `fireflies.js` works out from its own
 numbers. Nothing is instantiated, connected or scheduled.
 That is what the guideline allows ("static data structures and instances of
 built-in JavaScript objects"). `WorkspaceFxWallpaper` calls `getSettings()` in its
@@ -166,12 +162,8 @@ constructor, but it is constructed inside `enable()`.
 
 ### Destroy all objects: meets
 
-`WorkspaceFxApp.disable()` disables the titles and the switch animation, if
-they are on, then the wallpaper. The titles take back their two injections
-(`WorkspaceSwitcherPopup.prototype.display`, `Main.wm.insertWorkspace`), the
-rename keybinding, the Activities hover connection and its timer, and destroy
-the editor, the popup they put up, the top-bar button and every title. The
-switch animation puts the controller's `animateSwitch` back while it is still
+`WorkspaceFxApp.disable()` disables the switch animation, if it is on, then
+the wallpaper. The switch animation puts the controller's `animateSwitch` back while it is still
 its own. The wallpaper's `disable()` tears down, in order: the layout-manager,
 settings, interface, mutter, desktop-background and workspace-manager signal
 connections; the overview clones and the slide override (put back
@@ -223,11 +215,11 @@ There is no `ByteArray`, `Lang` or `Mainloop`, and no `run_dispose()`.
 
 ### No GTK in the shell, no shell libraries in the preferences: meets
 
-The shell side imports Gio, GLib, GObject, GDesktopEnums, Clutter, Cogl, Meta,
-Shell, St, GWeather and cairo, and no Gtk, Gdk or Adw. `prefs.js`
+The shell side imports Gio, GLib, GObject, GDesktopEnums, GdkPixbuf, Graphene,
+Clutter, Cogl, Meta, St, GWeather and cairo, and no Gtk, Gdk or Adw. `prefs.js`
 imports Adw, Gtk, Gio and GLib, plus `lib/catalog.js` (the layers and
 `lib/layer.js`, all pure JS), `lib/palettes.js` (cairo), `lib/scenes.js` (Gio, GLib),
-and `lib/titlesPrefs.js` and `lib/switchPrefs.js` (Adw, Gtk, Gio, and the pure
+and `lib/switchPrefs.js` (Adw, Gtk, Gio, and the pure
 `lib/switch/scenes.js`), none of which imports Clutter, Meta, St or Shell. Best Practices suggests keeping
 modules used only by the preferences in a `prefs/` directory. `scenes.js` is such
 a module, so moving it is optional tidying.
@@ -279,13 +271,13 @@ or other indications of AI-generated output will be rejected". Best Practices
 lists the patterns reviewers look for. In this code:
 
 - **Optional chaining on guaranteed APIs** ("Avoid Unnecessary Checks"): none
-  remain: `error.matches()`, `peek_stage_views()` and the parts `enable()`
-  builds are used directly. What optional chaining is left is on private shell
+  remain: `error.matches()`, `peek_stage_views()` and the wallpaper `enable()`
+  builds is used directly. What optional chaining is left is on private shell
   paths, where it is how they degrade and [private-api.md](private-api.md)
   explains each; on what is kept only while it is needed and null otherwise (the
   wallpaper's `_pointer` and `_daytime`, a layer's `state`, a
-  monitor's tilt, a renderer for a monitor not yet built, an optional part in
-  `app.js`, the titles' popup, editor and button, and the callbacks and
+  monitor's tilt, a renderer for a monitor not yet built, the switch animation in
+  `app.js`, and the callbacks and
   cancellables set after construction); on
   the place GNOME Weather's settings deserialize to, which may be none; and on
   `workspace.metaWorkspace?.index()` in `overview.js`, where `metaWorkspace` is

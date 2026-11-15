@@ -1,6 +1,6 @@
 ---
 name: drive-extension
-description: What is particular to driving Workspace FX in the nested GNOME Shell - the start flags that matter here (--clean, --monitors, --stand-in), the settings that change what is drawn, the workspace titles and their editor, a switch animation caught phase by phase, comparing animated frames, measuring, and the README's screenshots. Read the nested-shell skill first; use this whenever a pattern's look, colours, palettes, opacity, motion, the overview or prefs layout must be SEEN.
+description: What is particular to driving Workspace FX in the nested GNOME Shell - the start flags that matter here (--clean, --monitors, --stand-in), the settings that change what is drawn, a switch animation caught phase by phase, comparing animated frames, measuring, and the README's screenshots. Read the nested-shell skill first; use this whenever a pattern's look, colours, palettes, opacity, motion, the overview or prefs layout must be SEEN.
 ---
 
 # Driving Workspace FX in the nested shell
@@ -13,19 +13,16 @@ here. This is what differs for Workspace FX.
 
 The patterns cover the whole desktop of every monitor, behind the windows, and appear
 again in the overview's workspace previews, its thumbnail strip and the workspace slide
-(`overview on`, or `key Super+Page_Down` for a switch). The titles' pencil is the only
-thing in the top bar; everything else visible is a GSettings key. Crop `shot`s to the part
-being judged.
+(`overview on`, or `key Super+Page_Down` for a switch). Nothing of it is in the top bar;
+everything visible is a GSettings key. Crop `shot`s to the part being judged.
 
 The nested session starts with dynamic workspaces and one workspace, where no switch
-happens. For the titles and the switch animation give it four, and names, in its own
-settings:
+happens. For the switch animation give it four, in its own settings:
 
 ```bash
 N="./scripts/nested.sh run timeout 5 gsettings"
 $N set org.gnome.mutter dynamic-workspaces false
 $N set org.gnome.desktop.wm.preferences num-workspaces 4
-$N set org.gnome.desktop.wm.preferences workspace-names "['First', '', 'Third']"
 ```
 
 From zsh, run those under `bash -c` (zsh does not split `$N`).
@@ -71,30 +68,6 @@ Useful keys: `enabled-effects` (`as` of catalog ids), `background-mode`
 - **Covering the desktop** (for `pause-when-covered`): `key F11` fullscreens most apps;
   `key Alt+F10` maximizes where a tiling extension has taken `Super+Up`.
 
-## The titles
-
-- **The popup lasts about 0.7 s**: shoot 0.2–0.3 s after the key, in the same `do`.
-  The first `shot` after a `start` takes longer than that: take a throwaway one first.
-- **Where it is**: the title is centred just below the top bar, its box about y 57–127
-  on a 1600x900 monitor at `large` (in the middle with `title-position center`); the
-  dots are at the bottom. The pencil is just right of the workspace dots, about x 118
-  at y 14 (`indicator-position` `left`, the default).
-- **Renaming**: `key Super+F2` (or `click 118 14`) opens the title as an editor with the
-  name selected, ✕ left and ✓ right of it; type one `key` per letter (`say` does not
-  type), `key Return`. The buttons are about 80 px either side of the name's ends at
-  y 92 (`large`, `top`); `key Tab` reaches them.
-- **Hover**: `move 40 14` is on the workspace dots (the Activities button), clear of the
-  hot corner; the title shows about 0.5 s later and stays until a `move` away.
-- **Inserting**: with dynamic workspaces, `click` a window on the first workspace to
-  focus it, then `key Super+Shift+Page_Up`; a workspace switch alone leaves no focus.
-- **Names following workspaces** needs windows: `./scripts/nested.sh run gjs -m win.js`
-  with a few-line Gtk 4 window script in the scratch folder, one per workspace with
-  dynamic workspaces on; kill one window's process by pid and its workspace closes.
-- **Never test the shortcut capture** in the preferences there: it asks to inhibit
-  shortcuts, and the answer is written to the real permission store.
-- **On and off**: `org.gnome.shell.extensions.workspace-fx.titles enabled` takes the
-  pencil, the shortcut and the titles away and back, live.
-
 ## The switch animation
 
 ```bash
@@ -133,13 +106,9 @@ JPEGs in `docs/screenshots/`: `deep-space.jpg` at 1600×833, `patterns/*.jpg` at
 scheme (`org.gnome.desktop.interface color-scheme prefer-dark` in the nested settings):
 `scenes.png` the Scenes page with one saved scene, `prefs.png` the Patterns page
 scrolled six notches (`enabled-effects` `['wave', 'sparkles', 'constellation']`),
-`prefs-titles.png` and `prefs-switching.png` the Titles and Switching pages at their
-defaults. Click the window's title bar first: `window` needs it focused. Each
+`prefs-switching.png` the Switching page at its defaults. Click the window's title bar first: `window` needs it focused. Each
 pattern is shown alone over a palette it suits; the particle patterns are cropped close,
 and Starfield, Sparkles and Embers are at twice their Amount and 1.5× their Brightness,
-which the README says. `titles/switch.jpg` is a `Super+Page_Down` shot onto "Photo Edits"
-(names `['Writing', 'Photo Edits', 'Music']`, the switch animation off) cropped below the
-top bar (`1600x868+0+32`), and `titles/rename.png` the editor 0.4 s after `key Super+F2`
-there (`shot … 500 40 600 110`). Take them from a `start --stand-in` shell, whose `desktop`
+which the README says. Take them from a `start --stand-in` shell, whose `desktop`
 base is GNOME's default wallpaper, never the user's; never point `image` at a file of
 theirs.
